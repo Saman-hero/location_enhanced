@@ -1,5 +1,6 @@
+<?php $__lang = current_lang(); $__dir = $__lang === 'ar' ? 'rtl' : 'ltr'; ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="<?= $__lang ?>" dir="<?= $__dir ?>">
 <head>
 <meta charset="UTF-8">
 <title>404 — AutoLocation</title>
@@ -16,9 +17,9 @@
 <body>
   <div class="box">
     <div class="num">404</div>
-    <h1>Page introuvable</h1>
-    <p>La page demandée n'existe pas.</p>
-    <a href="<?= BASE_URL ?>/">Retour au tableau de bord</a>
+    <h1><?= t('404_title') ?></h1>
+    <p><?= t('404_msg') ?></p>
+    <a href="<?= BASE_URL ?>/"><?= t('404_back') ?></a>
   </div>
 </body>
 </html>

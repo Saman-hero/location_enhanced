@@ -18,13 +18,14 @@ if (isset($_GET['lang']) && in_array($_GET['lang'], $_supported_langs)) {
 }
 $_current_lang = $_SESSION['lang'] ?? 'fr';
 $_lang_file    = __DIR__ . '/../lang/' . $_current_lang . '.php';
-$GLOBALS['__t'] = file_exists($_lang_file) ? require $_lang_file : require __DIR__ . '/../lang/fr.php';
+$GLOBALS['__t']    = file_exists($_lang_file) ? require $_lang_file : require __DIR__ . '/../lang/fr.php';
+$GLOBALS['__lang'] = $_current_lang;
 
 function t(string $key, ...$args): string {
     $str = $GLOBALS['__t'][$key] ?? $key;
     return $args ? sprintf($str, ...$args) : $str;
 }
-function current_lang(): string { return $GLOBALS['_current_lang'] ?? $_SESSION['lang'] ?? 'fr'; }
+function current_lang(): string { return $GLOBALS['__lang'] ?? 'fr'; }
 
 // ── Flash helper ─────────────────────────────────────────────
 function flash(string $type, string $msg): void {
@@ -49,7 +50,7 @@ function require_auth(): void {
 function require_admin(): void {
     require_auth();
     if (($_SESSION['user_role'] ?? '') !== 'admin') {
-        flash('danger', 'Accès réservé aux administrateurs.');
+        flash('danger', t('access_denied'));
         header('Location: /location_enhanced/');
         exit;
     }
@@ -75,24 +76,25 @@ function audit(PDO $db, string $action, string $module, string $details = ''): v
 
 function status_badge(string $status): string {
     $map = [
-        'disponible'  => 'badge-green',
-        'loué'        => 'badge-blue',
-        'maintenance' => 'badge-yellow',
-        'indisponible'=> 'badge-red',
-        'en attente'  => 'badge-yellow',
-        'confirmée'   => 'badge-blue',
-        'en cours'    => 'badge-green',
-        'terminée'    => 'badge-gray',
-        'annulée'     => 'badge-red',
-        'actif'       => 'badge-green',
-        'suspendu'    => 'badge-yellow',
-        'liste_noire' => 'badge-red',
-        'planifiée'   => 'badge-blue',
-        'ouvert'      => 'badge-red',
-        'clôturé'     => 'badge-gray',
+        'disponible'   => ['badge-green',  'status_disponible'],
+        'loué'         => ['badge-blue',   'status_loue'],
+        'maintenance'  => ['badge-yellow', 'status_maintenance'],
+        'indisponible' => ['badge-red',    'status_indisponible'],
+        'en attente'   => ['badge-yellow', 'status_en_attente'],
+        'confirmée'    => ['badge-blue',   'status_confirmee'],
+        'en cours'     => ['badge-green',  'status_en_cours'],
+        'terminée'     => ['badge-gray',   'status_terminee'],
+        'annulée'      => ['badge-red',    'status_annulee'],
+        'actif'        => ['badge-green',  'status_actif'],
+        'suspendu'     => ['badge-yellow', 'status_suspendu'],
+        'liste_noire'  => ['badge-red',    'status_liste_noire'],
+        'planifiée'    => ['badge-blue',   'status_planifiee'],
+        'ouvert'       => ['badge-red',    'status_ouvert'],
+        'clôturé'      => ['badge-gray',   'status_cloture'],
     ];
-    $cls = $map[$status] ?? 'badge-gray';
-    return '<span class="badge ' . $cls . '">' . h($status) . '</span>';
+    [$cls, $key] = $map[$status] ?? ['badge-gray', null];
+    $label = $key ? t($key) : h($status);
+    return '<span class="badge ' . $cls . '">' . $label . '</span>';
 }
 
 function paginate(int $total, int $per_page, int $page): array {

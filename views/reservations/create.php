@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Nouvelle réservation'; $pageBreadcrumb = 'Réservations › Nouveau'; ?>
+<?php $pageTitle = t('add_reservation'); $pageBreadcrumb = t('reservations').' › '.t('btn_new');
+$jLabel = t('days');
+?>
 
 <?php if (!empty($errors)): ?>
 <div class="alert alert-danger"><?= implode('<br>', array_map('h', $errors)) ?></div>
@@ -6,25 +8,25 @@
 
 <div class="card">
   <div class="card-header">
-    <span class="card-title">Nouvelle réservation</span>
-    <a href="<?= BASE_URL ?>/?page=reservations" class="btn btn-outline btn-sm">← Retour</a>
+    <span class="card-title"><?= t('add_reservation') ?></span>
+    <a href="<?= BASE_URL ?>/?page=reservations" class="btn btn-outline btn-sm">← <?= t('btn_back') ?></a>
   </div>
   <div class="card-body">
     <form method="POST">
       <div class="form-grid-2" style="margin-bottom:16px;">
         <div>
-          <label class="form-label">Client *</label>
+          <label class="form-label"><?= t('client') ?> *</label>
           <select name="client_id" class="form-control" required>
-            <option value="">— Sélectionner un client —</option>
+            <option value=""><?= t('select_client') ?></option>
             <?php foreach ($clients as $c): ?>
             <option value="<?= $c['id'] ?>" <?= $data['client_id']==$c['id']?'selected':'' ?>><?= h($c['prenom'].' '.$c['nom']) ?> (<?= h($c['cin']??'') ?>)</option>
             <?php endforeach; ?>
           </select>
         </div>
         <div>
-          <label class="form-label">Véhicule *</label>
+          <label class="form-label"><?= t('vehicle') ?> *</label>
           <select name="vehicle_id" class="form-control" id="vehicle-sel" required onchange="updatePrice()">
-            <option value="">— Sélectionner un véhicule —</option>
+            <option value=""><?= t('select_vehicle') ?></option>
             <?php foreach ($vehicles as $v): ?>
             <option value="<?= $v['id'] ?>" data-price="<?= $v['prix_jour'] ?>" data-caution="<?= $v['caution'] ?>" <?= $data['vehicle_id']==$v['id']?'selected':'' ?>>
               <?= h($v['numero'].' — '.$v['marque'].' '.$v['modele']) ?> (<?= number_format($v['prix_jour'],0,',',' ') ?> MAD/j)
@@ -34,45 +36,46 @@
         </div>
       </div>
       <div class="form-grid-2" style="margin-bottom:16px;">
-        <div><label class="form-label">Date de début *</label><input type="datetime-local" name="date_debut" class="form-control" value="<?= h(str_replace(' ','T',substr($data['date_debut']??'',0,16))) ?>" required onchange="calcDays()"></div>
-        <div><label class="form-label">Date de fin prévue *</label><input type="datetime-local" name="date_fin_prevue" class="form-control" value="<?= h(str_replace(' ','T',substr($data['date_fin_prevue']??'',0,16))) ?>" required onchange="calcDays()"></div>
+        <div><label class="form-label"><?= t('start_date') ?> *</label><input type="datetime-local" name="date_debut" class="form-control" value="<?= h(str_replace(' ','T',substr($data['date_debut']??'',0,16))) ?>" required onchange="calcDays()"></div>
+        <div><label class="form-label"><?= t('end_date') ?> *</label><input type="datetime-local" name="date_fin_prevue" class="form-control" value="<?= h(str_replace(' ','T',substr($data['date_fin_prevue']??'',0,16))) ?>" required onchange="calcDays()"></div>
       </div>
       <div class="form-grid-2" style="margin-bottom:16px;">
-        <div><label class="form-label">Lieu de départ</label><input type="text" name="lieu_depart" class="form-control" value="<?= h($data['lieu_depart']) ?>" placeholder="Agence Casablanca"></div>
-        <div><label class="form-label">Lieu de retour</label><input type="text" name="lieu_retour" class="form-control" value="<?= h($data['lieu_retour']) ?>" placeholder="Agence Casablanca"></div>
+        <div><label class="form-label"><?= t('departure_location') ?></label><input type="text" name="lieu_depart" class="form-control" value="<?= h($data['lieu_depart']) ?>" placeholder="Agence Casablanca"></div>
+        <div><label class="form-label"><?= t('return_location') ?></label><input type="text" name="lieu_retour" class="form-control" value="<?= h($data['lieu_retour']) ?>" placeholder="Agence Casablanca"></div>
       </div>
       <div class="form-grid-2" style="margin-bottom:16px;">
-        <div><label class="form-label">Statut initial</label>
+        <div><label class="form-label"><?= t('initial_status') ?></label>
           <select name="statut" class="form-control">
             <?php foreach(['en attente','confirmée','en cours'] as $s): ?>
             <option value="<?= $s ?>" <?= $data['statut']===$s?'selected':'' ?>><?= ucfirst($s) ?></option>
             <?php endforeach; ?>
           </select>
         </div>
-        <div><label class="form-label">Durée estimée</label><div id="days-display" style="padding:9px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;color:#64748b;">—</div></div>
+        <div><label class="form-label"><?= t('estimated_duration') ?></label><div id="days-display" style="padding:9px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;color:#64748b;">—</div></div>
       </div>
 
       <div id="summary-box" style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:16px 20px;margin-bottom:20px;display:none;">
-        <div style="font-size:13px;font-weight:600;color:#065f46;margin-bottom:10px;">Récapitulatif</div>
+        <div style="font-size:13px;font-weight:600;color:#065f46;margin-bottom:10px;"><?= t('portal_summary') ?></div>
         <div style="display:flex;gap:24px;flex-wrap:wrap;">
-          <div><span style="font-size:11px;color:#6b7280;">Durée</span><br><strong id="sum-days">—</strong></div>
-          <div><span style="font-size:11px;color:#6b7280;">Prix/jour</span><br><strong id="sum-price">—</strong></div>
-          <div><span style="font-size:11px;color:#6b7280;">Montant total</span><br><strong id="sum-total" style="font-size:18px;color:#059669;">—</strong></div>
-          <div><span style="font-size:11px;color:#6b7280;">Caution</span><br><strong id="sum-caution">—</strong></div>
+          <div><span style="font-size:11px;color:#6b7280;"><?= t('nb_days') ?></span><br><strong id="sum-days">—</strong></div>
+          <div><span style="font-size:11px;color:#6b7280;"><?= t('price_per_day') ?></span><br><strong id="sum-price">—</strong></div>
+          <div><span style="font-size:11px;color:#6b7280;"><?= t('total') ?></span><br><strong id="sum-total" style="font-size:18px;color:#059669;">—</strong></div>
+          <div><span style="font-size:11px;color:#6b7280;"><?= t('vehicle_deposit') ?></span><br><strong id="sum-caution">—</strong></div>
         </div>
       </div>
 
-      <div style="margin-bottom:24px;"><label class="form-label">Commentaire</label><textarea name="commentaire" class="form-control" rows="3" placeholder="Notes, instructions particulières..."><?= h($data['commentaire']) ?></textarea></div>
+      <div style="margin-bottom:24px;"><label class="form-label"><?= t('comment') ?></label><textarea name="commentaire" class="form-control" rows="3" placeholder="Notes, instructions particulières..."><?= h($data['commentaire']) ?></textarea></div>
       <div style="display:flex;gap:10px;">
-        <button type="submit" class="btn btn-emerald">Créer la réservation</button>
-        <a href="<?= BASE_URL ?>/?page=reservations" class="btn btn-outline">Annuler</a>
+        <button type="submit" class="btn btn-emerald"><?= t('create_reservation_btn') ?></button>
+        <a href="<?= BASE_URL ?>/?page=reservations" class="btn btn-outline"><?= t('btn_cancel') ?></a>
       </div>
     </form>
   </div>
 </div>
 
-<?php $extraScripts = <<<'JS'
+<?php $jLabelJs = json_encode($jLabel); $extraScripts = <<<JS
 <script>
+const jLabel = {$jLabelJs};
 function updatePrice() {
   const sel = document.getElementById('vehicle-sel');
   const opt = sel.options[sel.selectedIndex];
@@ -86,7 +89,7 @@ function calcDays() {
   if (!d1 || !d2) return;
   const diff = (new Date(d2) - new Date(d1)) / 86400000;
   const days = Math.max(1, Math.ceil(diff));
-  document.getElementById('days-display').textContent = days + ' jour(s)';
+  document.getElementById('days-display').textContent = days + ' ' + jLabel;
   if (window._price) {
     const total = days * window._price;
     document.getElementById('sum-days').textContent    = days + ' j';

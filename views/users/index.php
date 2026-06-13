@@ -1,18 +1,18 @@
-<?php $pageTitle = 'Utilisateurs'; $pageBreadcrumb = 'Gestion des utilisateurs'; ?>
+<?php $pageTitle = t('users'); $pageBreadcrumb = t('users'); ?>
 
 <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
   <a href="<?= BASE_URL ?>/?page=users/add" class="btn btn-emerald">
     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Nouvel utilisateur
+    <?= t('new_user_btn') ?>
   </a>
 </div>
 
 <div class="card">
-  <div class="card-header"><span class="card-title">Utilisateurs (<?= count($users) ?>)</span></div>
+  <div class="card-header"><span class="card-title"><?= t('users') ?> (<?= count($users) ?>)</span></div>
   <div style="overflow-x:auto;">
     <table class="data-table">
       <thead>
-        <tr><th>Utilisateur</th><th>Identifiant</th><th>Rôle</th><th>Créé le</th><th>Actions</th></tr>
+        <tr><th><?= t('user_col') ?></th><th><?= t('username_col') ?></th><th><?= t('role') ?></th><th><?= t('created_at') ?></th><th><?= t('actions') ?></th></tr>
       </thead>
       <tbody>
         <?php foreach ($users as $u): ?>
@@ -30,19 +30,19 @@
             <?php $roleColor = $u['role']==='admin' ? '#ef4444' : '#3b82f6'; ?>
             <span style="font-size:12px;font-weight:600;color:<?= $roleColor ?>;background:<?= $roleColor ?>15;padding:3px 8px;border-radius:99px;"><?= ucfirst($u['role']) ?></span>
           </td>
-          <td style="color:#94a3b8;font-size:13px;"><?= $u['created_at'] ? date('d/m/Y', strtotime($u['created_at'])) : '—' ?></td>
+          <td style="color:#94a3b8;font-size:13px;" dir="ltr"><?= $u['created_at'] ? date('d/m/Y', strtotime($u['created_at'])) : '—' ?></td>
           <td>
             <div style="display:flex;gap:5px;">
-              <a href="<?= BASE_URL ?>/?page=users/edit&id=<?= $u['id'] ?>" class="btn btn-outline btn-sm">Éditer</a>
+              <a href="<?= BASE_URL ?>/?page=users/edit&id=<?= $u['id'] ?>" class="btn btn-outline btn-sm"><?= t('btn_edit_short') ?></a>
               <?php if ($u['id'] != ($_SESSION['user_id']??0)): ?>
-              <a href="<?= BASE_URL ?>/?page=users/delete&id=<?= $u['id'] ?>" class="btn btn-outline btn-sm" onclick="return confirm('Supprimer cet utilisateur ?')" style="color:#ef4444;">Suppr.</a>
+              <a href="<?= BASE_URL ?>/?page=users/delete&id=<?= $u['id'] ?>" class="btn btn-outline btn-sm" onclick="return confirm('<?= t('confirm_delete_user') ?>')" style="color:#ef4444;"><?= t('btn_delete_short') ?></a>
               <?php endif; ?>
             </div>
           </td>
         </tr>
         <?php endforeach; ?>
         <?php if (empty($users)): ?>
-        <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:40px;">Aucun utilisateur</td></tr>
+        <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:40px;"><?= t('no_users') ?></td></tr>
         <?php endif; ?>
       </tbody>
     </table>

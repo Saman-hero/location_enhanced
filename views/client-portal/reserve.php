@@ -2,6 +2,7 @@
 $pageTitle = 'Réserver '.$vehicle['marque'].' '.$vehicle['modele'];
 $montantBase = $nbJours > 0 ? $nbJours * $vehicle['prix_jour'] : $vehicle['prix_jour'];
 $caution     = $vehicle['caution'] ?? 0;
+$jLabel = t('days');
 ?>
 <style>
   .reserve-layout {
@@ -117,7 +118,7 @@ $caution     = $vehicle['caution'] ?? 0;
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:13px;color:#94a3b8;">
       <a href="<?= BASE_URL ?>/?page=client" style="color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:4px;">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Nos véhicules
+        <?= t('portal_title') ?>
       </a>
       <span>›</span>
       <span style="color:#0f172a;font-weight:500;"><?= h($vehicle['marque'].' '.$vehicle['modele']) ?></span>
@@ -191,22 +192,22 @@ $caution     = $vehicle['caution'] ?? 0;
     <div class="specs-grid">
       <div class="spec-card">
         <div class="spec-icon"><svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
-        <div class="spec-label">Places</div>
+        <div class="spec-label"><?= t('vehicle_seats') ?></div>
         <div class="spec-value"><?= (int)($vehicle['nb_places']??5) ?></div>
       </div>
       <div class="spec-card">
         <div class="spec-icon"><svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
-        <div class="spec-label">Transmission</div>
+        <div class="spec-label"><?= t('vehicle_transmission') ?></div>
         <div class="spec-value"><?= ucfirst(h($vehicle['transmission']??'—')) ?></div>
       </div>
       <div class="spec-card">
         <div class="spec-icon"><svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg></div>
-        <div class="spec-label">Carburant</div>
+        <div class="spec-label"><?= t('vehicle_fuel') ?></div>
         <div class="spec-value"><?= ucfirst(h($vehicle['carburant']??'—')) ?></div>
       </div>
       <div class="spec-card">
         <div class="spec-icon"><svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg></div>
-        <div class="spec-label">Kilométrage</div>
+        <div class="spec-label"><?= t('vehicle_mileage') ?></div>
         <div class="spec-value"><?= number_format($vehicle['kilometrage']??0,0,',',' ') ?> km</div>
       </div>
     </div>
@@ -215,41 +216,41 @@ $caution     = $vehicle['caution'] ?? 0;
     <div class="form-section">
       <div class="section-title">
         <svg width="18" height="18" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        Vos informations personnelles
+        <?= t('portal_your_info') ?>
       </div>
 
       <div class="form-row">
         <div>
-          <label class="form-label">Prénom *</label>
+          <label class="form-label"><?= t('res_form_firstname') ?> *</label>
           <input type="text" name="prenom" class="form-control" value="<?= h($data['prenom']) ?>" placeholder="Mohammed" required>
         </div>
         <div>
-          <label class="form-label">Nom *</label>
+          <label class="form-label"><?= t('res_form_name') ?> *</label>
           <input type="text" name="nom" class="form-control" value="<?= h($data['nom']) ?>" placeholder="Alaoui" required>
         </div>
       </div>
       <div class="form-row">
         <div>
-          <label class="form-label">CIN *</label>
+          <label class="form-label"><?= t('res_form_cin') ?> *</label>
           <input type="text" name="cin" class="form-control" value="<?= h($data['cin']) ?>" placeholder="AB123456" required>
         </div>
         <div>
-          <label class="form-label">Téléphone *</label>
+          <label class="form-label"><?= t('res_form_phone') ?> *</label>
           <input type="tel" name="telephone" class="form-control" value="<?= h($data['telephone']) ?>" placeholder="+212 6XX-XXXXXX" required>
         </div>
       </div>
       <div class="form-row">
         <div>
-          <label class="form-label">Email</label>
+          <label class="form-label"><?= t('res_form_email') ?></label>
           <input type="email" name="email" class="form-control" value="<?= h($data['email']) ?>" placeholder="email@exemple.ma">
         </div>
         <div>
-          <label class="form-label">N° permis de conduire</label>
+          <label class="form-label"><?= t('res_form_license') ?></label>
           <input type="text" name="permis_numero" class="form-control" value="<?= h($data['permis_numero']) ?>" placeholder="123456789">
         </div>
       </div>
       <div style="max-width:240px;">
-        <label class="form-label">Expiration du permis</label>
+        <label class="form-label"><?= t('res_form_license_exp') ?></label>
         <input type="date" name="permis_expiration" class="form-control" value="<?= h($data['permis_expiration']) ?>">
       </div>
     </div>
@@ -258,17 +259,17 @@ $caution     = $vehicle['caution'] ?? 0;
     <div class="form-section">
       <div class="section-title">
         <svg width="18" height="18" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Détails de la location
+        <?= t('portal_trip_details') ?>
       </div>
       <div class="form-row">
         <div>
-          <label class="form-label">Date &amp; heure de départ *</label>
+          <label class="form-label"><?= t('portal_date_from') ?> *</label>
           <input type="datetime-local" name="date_debut" class="form-control"
                  value="<?= h(str_replace(' ','T',substr($data['date_debut'],0,16))) ?>"
                  onchange="updateTotal()" required>
         </div>
         <div>
-          <label class="form-label">Date &amp; heure de retour *</label>
+          <label class="form-label"><?= t('portal_date_to') ?> *</label>
           <input type="datetime-local" name="date_fin_prevue" class="form-control"
                  value="<?= h(str_replace(' ','T',substr($data['date_fin_prevue'],0,16))) ?>"
                  onchange="updateTotal()" required>
@@ -276,11 +277,11 @@ $caution     = $vehicle['caution'] ?? 0;
       </div>
       <div class="form-row">
         <div>
-          <label class="form-label">Lieu de départ</label>
+          <label class="form-label"><?= t('portal_departure') ?></label>
           <input type="text" name="lieu_depart" class="form-control" value="<?= h($data['lieu_depart']) ?>" placeholder="Agence Casablanca">
         </div>
         <div>
-          <label class="form-label">Lieu de retour</label>
+          <label class="form-label"><?= t('portal_return') ?></label>
           <input type="text" name="lieu_retour" class="form-control" value="<?= h($data['lieu_retour']) ?>" placeholder="Agence Casablanca">
         </div>
       </div>
@@ -293,8 +294,8 @@ $caution     = $vehicle['caution'] ?? 0;
     <div class="sticky-widget">
 
       <div class="widget-header">
-        <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Prix par jour</div>
-        <div class="widget-price-main"><?= number_format($vehicle['prix_jour'],0,',',' ') ?> <span style="font-size:16px;font-weight:400;">MAD</span></div>
+        <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;"><?= t('per_day') ?></div>
+        <div class="widget-price-main num"><?= number_format($vehicle['prix_jour'],0,',',' ') ?> <span style="font-size:16px;font-weight:400;">MAD</span></div>
         <div class="widget-price-sub"><?= h($vehicle['marque'].' '.$vehicle['modele']) ?></div>
       </div>
 
@@ -303,36 +304,36 @@ $caution     = $vehicle['caution'] ?? 0;
         <!-- Price summary -->
         <div class="price-summary">
           <div class="price-row">
-            <span id="summary-label"><?= $nbJours > 0 ? $nbJours.' jour(s)' : '1 jour' ?> × <?= number_format($vehicle['prix_jour'],0,',',' ') ?> MAD</span>
-            <span id="summary-base"><?= number_format($montantBase,0,',',' ') ?> MAD</span>
+            <span id="summary-label" class="num"><?= $nbJours > 0 ? $nbJours.' '.t('days') : '1 '.t('day') ?> × <?= number_format($vehicle['prix_jour'],0,',',' ') ?> MAD</span>
+            <span id="summary-base" class="num"><?= number_format($montantBase,0,',',' ') ?> MAD</span>
           </div>
           <?php if ($caution > 0): ?>
           <div class="price-row">
-            <span>Caution (remboursable)</span>
-            <span><?= number_format($caution,0,',',' ') ?> MAD</span>
+            <span><?= t('portal_deposit_ref') ?></span>
+            <span class="num"><?= number_format($caution,0,',',' ') ?> MAD</span>
           </div>
           <?php endif; ?>
           <div class="price-row" style="border-top:1px solid #e2e8f0;margin-top:6px;padding-top:10px;font-weight:700;font-size:15px;color:#0f172a;">
-            <span>Total estimé</span>
-            <span id="summary-total" style="color:#059669;"><?= number_format($montantBase + $caution,0,',',' ') ?> MAD</span>
+            <span><?= t('portal_total_est') ?></span>
+            <span id="summary-total" class="num" style="color:#059669;"><?= number_format($montantBase + $caution,0,',',' ') ?> MAD</span>
           </div>
         </div>
 
         <button type="submit" class="cta-btn">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/></svg>
-          Confirmer la réservation
+          <?= t('portal_confirm_res') ?>
         </button>
         <div class="cta-note">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          Aucun frais prélevé maintenant
+          <?= t('portal_no_charge') ?>
         </div>
 
         <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f1f5f9;">
-          <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:500;">GARANTIES</div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:500;"><?= t('portal_guarantees') ?></div>
           <?php foreach ([
-            ['Annulation gratuite sous 24h', '#10b981'],
-            ['Assistance routière 24/7', '#3b82f6'],
-            ['Véhicule nettoyé & contrôlé', '#8b5cf6'],
+            [t('portal_free_cancel'), '#10b981'],
+            [t('portal_roadside'), '#3b82f6'],
+            [t('portal_cleaned'), '#8b5cf6'],
           ] as [$txt, $col]): ?>
           <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#475569;margin-bottom:6px;">
             <svg width="14" height="14" fill="none" stroke="<?= $col ?>" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
@@ -351,6 +352,7 @@ $caution     = $vehicle['caution'] ?? 0;
 <script>
 const prixJour = <?= (float)$vehicle['prix_jour'] ?>;
 const caution  = <?= (float)($vehicle['caution'] ?? 0) ?>;
+const jLabel   = <?= json_encode($jLabel) ?>;
 
 function updateTotal() {
   const d1 = document.querySelector('[name="date_debut"]').value;
@@ -359,7 +361,7 @@ function updateTotal() {
   const diff = (new Date(d2) - new Date(d1)) / 86400000;
   const jours = Math.max(1, Math.round(diff));
   const base  = jours * prixJour;
-  document.getElementById('summary-label').textContent = jours + ' jour(s) × ' + prixJour.toLocaleString('fr-FR') + ' MAD';
+  document.getElementById('summary-label').textContent = jours + ' ' + jLabel + ' × ' + prixJour.toLocaleString('fr-FR') + ' MAD';
   document.getElementById('summary-base').textContent  = base.toLocaleString('fr-FR') + ' MAD';
   document.getElementById('summary-total').textContent = (base + caution).toLocaleString('fr-FR') + ' MAD';
 }

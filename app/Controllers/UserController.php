@@ -33,12 +33,12 @@ class UserController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!trim($data['nom']))               $errors[] = 'Nom obligatoire.';
-            if (!trim($data['username']))          $errors[] = 'Identifiant obligatoire.';
+            if (!trim($data['nom']))               $errors[] = t('err_nom_required');
+            if (!trim($data['username']))          $errors[] = t('err_username_required');
             $pw = $this->input('password');
-            if (!$pw)                              $errors[] = 'Mot de passe obligatoire.';
-            if ($pw && strlen($pw) < 6)            $errors[] = 'Mot de passe : 6 caractères minimum.';
-            if (!$errors && $this->userModel->usernameExists($data['username'])) $errors[] = 'Identifiant déjà utilisé.';
+            if (!$pw)                              $errors[] = t('err_password_required');
+            if ($pw && strlen($pw) < 6)            $errors[] = t('err_password_length');
+            if (!$errors && $this->userModel->usernameExists($data['username'])) $errors[] = t('err_username_exists');
 
             if (!$errors) {
                 $id = $this->userModel->create([
@@ -49,7 +49,7 @@ class UserController extends Controller
                     'role'     => $data['role'],
                 ]);
                 $this->auditModel->log('Création utilisateur', 'system', "User {$data['username']} créé");
-                $this->flash('success', 'Utilisateur créé.');
+                $this->flash('success', t('user_added'));
                 $this->redirect('users');
             }
         }
@@ -62,23 +62,23 @@ class UserController extends Controller
         $this->requireAdmin();
         $id   = (int)$this->query('id');
         $user = $this->userModel->find($id);
-        if (!$user) { $this->flash('danger', 'Utilisateur introuvable.'); $this->redirect('users'); }
+        if (!$user) { $this->flash('danger', t('user_not_found')); $this->redirect('users'); }
 
         $errors = [];
         $data   = $user;
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!trim($data['nom'])) $errors[] = 'Nom obligatoire.';
+            if (!trim($data['nom'])) $errors[] = t('err_nom_required');
             $pw = $this->input('password');
-            if ($pw && strlen($pw) < 6) $errors[] = 'Mot de passe : 6 caractères minimum.';
+            if ($pw && strlen($pw) < 6) $errors[] = t('err_password_length');
 
             if (!$errors) {
                 $fields = ['nom' => $data['nom'], 'prenom' => $data['prenom'], 'role' => $data['role']];
                 if ($pw) $fields['password'] = password_hash($pw, PASSWORD_BCRYPT);
                 $this->userModel->update($id, $fields);
                 $this->auditModel->log('Modification utilisateur', 'system', "User {$user['username']} modifié");
-                $this->flash('success', 'Utilisateur mis à jour.');
+                $this->flash('success', t('user_updated'));
                 $this->redirect('users');
             }
         }
@@ -91,15 +91,15 @@ class UserController extends Controller
         $this->requireAdmin();
         $id = (int)$this->query('id');
         if ($id === (int)($_SESSION['user_id'] ?? 0)) {
-            $this->flash('danger', 'Vous ne pouvez pas supprimer votre propre compte.');
+            $this->flash('danger', t('cannot_delete_self'));
             $this->redirect('users');
         }
         $user = $this->userModel->find($id);
-        if (!$user) { $this->flash('danger', 'Utilisateur introuvable.'); $this->redirect('users'); }
+        if (!$user) { $this->flash('danger', t('user_not_found')); $this->redirect('users'); }
 
         $this->userModel->delete($id);
         $this->auditModel->log('Suppression utilisateur', 'system', "User {$user['username']} supprimé");
-        $this->flash('success', "Utilisateur {$user['username']} supprimé.");
+        $this->flash('success', t('user_deleted'));
         $this->redirect('users');
     }
 }

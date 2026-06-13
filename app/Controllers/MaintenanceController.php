@@ -54,9 +54,9 @@ class MaintenanceController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!$data['vehicle_id'])       $errors[] = 'Sélectionnez un véhicule.';
-            if (!$data['type_maintenance']) $errors[] = 'Type obligatoire.';
-            if (!$data['date_prevue'])      $errors[] = 'Date prévue obligatoire.';
+            if (!$data['vehicle_id'])       $errors[] = t('err_select_vehicle');
+            if (!$data['type_maintenance']) $errors[] = t('err_type_required');
+            if (!$data['date_prevue'])      $errors[] = t('err_date_prevue');
 
             if (!$errors) {
                 $id = $this->maintenanceModel->create([
@@ -71,7 +71,7 @@ class MaintenanceController extends Controller
                     'statut'           => $data['statut'],
                 ]);
                 $this->auditModel->log('Création maintenance', 'maintenance', "Maintenance créée (ID:$id)");
-                $this->flash('success', 'Maintenance planifiée.');
+                $this->flash('success', t('maintenance_added'));
                 $this->redirect('maintenance');
             }
         }
@@ -84,7 +84,7 @@ class MaintenanceController extends Controller
         $this->requireAuth();
         $id          = (int)$this->query('id');
         $maintenance = $this->maintenanceModel->find($id);
-        if (!$maintenance) { $this->flash('danger', 'Maintenance introuvable.'); $this->redirect('maintenance'); }
+        if (!$maintenance) { $this->flash('danger', t('maintenance_not_found')); $this->redirect('maintenance'); }
 
         $errors   = [];
         $vehicles = $this->vehicleModel->all('marque, modele');
@@ -92,8 +92,8 @@ class MaintenanceController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!$data['vehicle_id'])       $errors[] = 'Sélectionnez un véhicule.';
-            if (!$data['type_maintenance']) $errors[] = 'Type obligatoire.';
+            if (!$data['vehicle_id'])       $errors[] = t('err_select_vehicle');
+            if (!$data['type_maintenance']) $errors[] = t('err_type_required');
 
             if (!$errors) {
                 $this->maintenanceModel->update($id, [
@@ -108,7 +108,7 @@ class MaintenanceController extends Controller
                     'statut'           => $data['statut'],
                 ]);
                 $this->auditModel->log('Modification maintenance', 'maintenance', "Maintenance #$id modifiée");
-                $this->flash('success', 'Maintenance mise à jour.');
+                $this->flash('success', t('maintenance_updated'));
                 $this->redirect('maintenance');
             }
         }
@@ -121,11 +121,11 @@ class MaintenanceController extends Controller
         $this->requireAuth();
         $id = (int)$this->query('id');
         $m  = $this->maintenanceModel->find($id);
-        if (!$m) { $this->flash('danger', 'Maintenance introuvable.'); $this->redirect('maintenance'); }
+        if (!$m) { $this->flash('danger', t('maintenance_not_found')); $this->redirect('maintenance'); }
 
         $this->maintenanceModel->delete($id);
         $this->auditModel->log('Suppression maintenance', 'maintenance', "Maintenance #$id supprimée");
-        $this->flash('success', 'Maintenance supprimée.');
+        $this->flash('success', t('maintenance_deleted'));
         $this->redirect('maintenance');
     }
 }

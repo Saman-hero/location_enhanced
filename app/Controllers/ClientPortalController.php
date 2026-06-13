@@ -80,14 +80,14 @@ class ClientPortalController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!trim($data['nom']))       $errors[] = 'Le nom est obligatoire.';
-            if (!trim($data['prenom']))    $errors[] = 'Le prénom est obligatoire.';
-            if (!trim($data['cin']))       $errors[] = 'Le CIN est obligatoire.';
-            if (!trim($data['telephone'])) $errors[] = 'Le téléphone est obligatoire.';
-            if (!$data['date_debut'])      $errors[] = 'Date de début obligatoire.';
-            if (!$data['date_fin_prevue']) $errors[] = 'Date de fin obligatoire.';
+            if (!trim($data['nom']))       $errors[] = t('err_nom_required');
+            if (!trim($data['prenom']))    $errors[] = t('err_prenom_required');
+            if (!trim($data['cin']))       $errors[] = t('err_cin_required');
+            if (!trim($data['telephone'])) $errors[] = t('err_phone_required');
+            if (!$data['date_debut'])      $errors[] = t('err_date_start');
+            if (!$data['date_fin_prevue']) $errors[] = t('err_date_end');
             if ($data['date_debut'] && $data['date_fin_prevue'] && $data['date_debut'] >= $data['date_fin_prevue'])
-                $errors[] = 'La date de retour doit être après la date de départ.';
+                $errors[] = t('err_date_return_order');
 
             if (!$errors) {
                 // Find or create client by CIN
@@ -96,7 +96,7 @@ class ClientPortalController extends Controller
                 $existingClient = $stmt->fetch();
 
                 if ($existingClient && $existingClient['statut'] === 'liste_noire') {
-                    $errors[] = 'Votre compte est suspendu. Veuillez contacter l\'agence.';
+                    $errors[] = t('err_client_blacklisted');
                 }
 
                 if (!$errors) {

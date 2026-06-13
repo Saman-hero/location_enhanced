@@ -45,12 +45,12 @@ class ReservationController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!$data['vehicle_id'])   $errors[] = 'Sélectionnez un véhicule.';
-            if (!$data['client_id'])    $errors[] = 'Sélectionnez un client.';
-            if (!$data['date_debut'])   $errors[] = 'Date de début obligatoire.';
-            if (!$data['date_fin_prevue']) $errors[] = 'Date de fin obligatoire.';
+            if (!$data['vehicle_id'])   $errors[] = t('err_select_vehicle');
+            if (!$data['client_id'])    $errors[] = t('err_select_client');
+            if (!$data['date_debut'])   $errors[] = t('err_date_start');
+            if (!$data['date_fin_prevue']) $errors[] = t('err_date_end');
             if ($data['date_debut'] && $data['date_fin_prevue'] && $data['date_debut'] >= $data['date_fin_prevue'])
-                $errors[] = 'La date de fin doit être après la date de début.';
+                $errors[] = t('err_date_order');
 
             if (!$errors) {
                 $ref     = $this->reservationModel->generateReference();
@@ -77,7 +77,7 @@ class ReservationController extends Controller
                     'created_by'    => $_SESSION['user_id'] ?? null,
                 ]);
                 $this->auditModel->log('Création réservation', 'reservations', "Réservation $ref créée (ID:$id)");
-                $this->flash('success', "Réservation $ref créée.");
+                $this->flash('success', t('reservation_added'));
                 $this->redirect('reservations');
             }
         }
@@ -90,7 +90,7 @@ class ReservationController extends Controller
         $this->requireAuth();
         $id          = (int)$this->query('id');
         $reservation = $this->reservationModel->find($id);
-        if (!$reservation) { $this->flash('danger', 'Réservation introuvable.'); $this->redirect('reservations'); }
+        if (!$reservation) { $this->flash('danger', t('reservation_not_found')); $this->redirect('reservations'); }
 
         $errors   = [];
         $vehicles = $this->vehicleModel->all('marque, modele');
@@ -99,10 +99,10 @@ class ReservationController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!$data['vehicle_id'])   $errors[] = 'Sélectionnez un véhicule.';
-            if (!$data['client_id'])    $errors[] = 'Sélectionnez un client.';
+            if (!$data['vehicle_id'])   $errors[] = t('err_select_vehicle');
+            if (!$data['client_id'])    $errors[] = t('err_select_client');
             if ($data['date_debut'] && $data['date_fin_prevue'] && $data['date_debut'] >= $data['date_fin_prevue'])
-                $errors[] = 'La date de fin doit être après la date de début.';
+                $errors[] = t('err_date_order');
 
             if (!$errors) {
                 $d1      = new \DateTime($data['date_debut']);
@@ -130,7 +130,7 @@ class ReservationController extends Controller
                     'commentaire'         => $data['commentaire'],
                 ]);
                 $this->auditModel->log('Modification réservation', 'reservations', "{$reservation['reference']} modifiée");
-                $this->flash('success', "Réservation {$reservation['reference']} mise à jour.");
+                $this->flash('success', t('reservation_updated'));
                 $this->redirect('reservations/show', ['id' => $id]);
             }
         }
@@ -143,7 +143,7 @@ class ReservationController extends Controller
         $this->requireAuth();
         $id          = (int)$this->query('id');
         $reservation = $this->reservationModel->withDetails($id);
-        if (!$reservation) { $this->flash('danger', 'Réservation introuvable.'); $this->redirect('reservations'); }
+        if (!$reservation) { $this->flash('danger', t('reservation_not_found')); $this->redirect('reservations'); }
 
         $stmt = $this->db->prepare(
             "SELECT * FROM paiements WHERE reservation_id = ? ORDER BY date_paiement DESC"
@@ -159,11 +159,11 @@ class ReservationController extends Controller
         $this->requireAuth();
         $id          = (int)$this->query('id');
         $reservation = $this->reservationModel->find($id);
-        if (!$reservation) { $this->flash('danger', 'Réservation introuvable.'); $this->redirect('reservations'); }
+        if (!$reservation) { $this->flash('danger', t('reservation_not_found')); $this->redirect('reservations'); }
 
         $this->reservationModel->delete($id);
         $this->auditModel->log('Suppression réservation', 'reservations', "{$reservation['reference']} supprimée");
-        $this->flash('success', "Réservation {$reservation['reference']} supprimée.");
+        $this->flash('success', t('reservation_deleted'));
         $this->redirect('reservations');
     }
 }

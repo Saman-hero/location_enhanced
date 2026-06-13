@@ -1,8 +1,8 @@
-<?php $pageTitle = $vehicle['marque'].' '.$vehicle['modele']; $pageBreadcrumb = 'Véhicules › Détails'; ?>
+<?php $pageTitle = $vehicle['marque'].' '.$vehicle['modele']; $pageBreadcrumb = t('vehicles').' › '.t('vehicle_detail'); ?>
 
 <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:20px;">
-  <a href="<?= BASE_URL ?>/?page=vehicles/edit&id=<?= $vehicle['id'] ?>" class="btn btn-outline">Modifier</a>
-  <a href="<?= BASE_URL ?>/?page=reservations/add&vehicle_id=<?= $vehicle['id'] ?>" class="btn btn-emerald">Nouvelle réservation</a>
+  <a href="<?= BASE_URL ?>/?page=vehicles/edit&id=<?= $vehicle['id'] ?>" class="btn btn-outline"><?= t('btn_edit') ?></a>
+  <a href="<?= BASE_URL ?>/?page=reservations/add&vehicle_id=<?= $vehicle['id'] ?>" class="btn btn-emerald"><?= t('add_reservation') ?></a>
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;margin-bottom:24px;">
@@ -19,20 +19,20 @@
       <hr class="divider">
       <dl style="margin-top:16px;">
         <?php $rows = [
-          ['N° interne', $vehicle['numero']],
-          ['Immatriculation', $vehicle['immatriculation']??'—'],
-          ['Catégorie', ucfirst($vehicle['categorie'])],
-          ['Carburant', ucfirst($vehicle['carburant']??'—')],
-          ['Transmission', ucfirst($vehicle['transmission']??'—')],
-          ['Nb. places', $vehicle['nb_places']],
-          ['Kilométrage', number_format($vehicle['kilometrage'],0,',',' ').' km'],
-          ['Prix / jour', number_format($vehicle['prix_jour'],2,',',' ').' MAD'],
-          ['Caution', number_format($vehicle['caution'],2,',',' ').' MAD'],
+          [t('vehicle_internal_num'), $vehicle['numero']],
+          [t('vehicle_plate'), $vehicle['immatriculation']??'—'],
+          [t('vehicle_category'), ucfirst($vehicle['categorie'])],
+          [t('vehicle_fuel'), ucfirst($vehicle['carburant']??'—')],
+          [t('vehicle_transmission'), ucfirst($vehicle['transmission']??'—')],
+          [t('vehicle_seats'), $vehicle['nb_places']],
+          [t('vehicle_mileage'), number_format($vehicle['kilometrage'],0,',',' ').' km'],
+          [t('vehicle_price'), number_format($vehicle['prix_jour'],2,',',' ').' MAD'],
+          [t('vehicle_deposit'), number_format($vehicle['caution'],2,',',' ').' MAD'],
         ];
         foreach ($rows as [$label, $val]): ?>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f8fafc;">
           <dt style="font-size:12px;color:#94a3b8;font-weight:500;"><?= $label ?></dt>
-          <dd style="font-size:13px;color:#0f172a;font-weight:500;margin:0;"><?= h((string)$val) ?></dd>
+          <dd style="font-size:13px;color:#0f172a;font-weight:500;margin:0;" dir="ltr"><?= h((string)$val) ?></dd>
         </div>
         <?php endforeach; ?>
       </dl>
@@ -42,25 +42,25 @@
   <div style="display:flex;flex-direction:column;gap:20px;">
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Historique des réservations</span>
-        <a href="<?= BASE_URL ?>/?page=reservations" class="btn btn-outline btn-sm">Voir tout</a>
+        <span class="card-title"><?= t('reservation_history') ?></span>
+        <a href="<?= BASE_URL ?>/?page=reservations" class="btn btn-outline btn-sm"><?= t('view_all') ?></a>
       </div>
       <div style="overflow-x:auto;">
         <table class="data-table">
-          <thead><tr><th>Référence</th><th>Client</th><th>Début</th><th>Fin prévue</th><th>Montant</th><th>Statut</th></tr></thead>
+          <thead><tr><th><?= t('reference') ?></th><th><?= t('client') ?></th><th><?= t('start_date') ?></th><th><?= t('end_date') ?></th><th><?= t('amount') ?></th><th><?= t('status') ?></th></tr></thead>
           <tbody>
             <?php foreach ($reservations as $r): ?>
             <tr>
-              <td><a href="<?= BASE_URL ?>/?page=reservations/show&id=<?= $r['id'] ?>" style="color:#3b82f6;font-weight:600;"><?= h($r['reference']) ?></a></td>
+              <td dir="ltr"><a href="<?= BASE_URL ?>/?page=reservations/show&id=<?= $r['id'] ?>" style="color:#3b82f6;font-weight:600;"><?= h($r['reference']) ?></a></td>
               <td><?= h($r['prenom'].' '.$r['nom']) ?></td>
-              <td><?= date('d/m/Y', strtotime($r['date_debut'])) ?></td>
-              <td><?= $r['date_fin_prevue'] ? date('d/m/Y', strtotime($r['date_fin_prevue'])) : '—' ?></td>
-              <td><?= $r['montant_total'] ? number_format($r['montant_total'],0,',',' ').' MAD' : '—' ?></td>
+              <td dir="ltr"><?= date('d/m/Y', strtotime($r['date_debut'])) ?></td>
+              <td dir="ltr"><?= $r['date_fin_prevue'] ? date('d/m/Y', strtotime($r['date_fin_prevue'])) : '—' ?></td>
+              <td dir="ltr"><?= $r['montant_total'] ? number_format($r['montant_total'],0,',',' ').' MAD' : '—' ?></td>
               <td><?= status_badge($r['statut']) ?></td>
             </tr>
             <?php endforeach; ?>
             <?php if (empty($reservations)): ?>
-            <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px;">Aucune réservation</td></tr>
+            <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px;"><?= t('no_reservations') ?></td></tr>
             <?php endif; ?>
           </tbody>
         </table>
@@ -69,23 +69,23 @@
 
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Maintenance récente</span>
-        <a href="<?= BASE_URL ?>/?page=maintenance/add&vehicle_id=<?= $vehicle['id'] ?>" class="btn btn-outline btn-sm">+ Ajouter</a>
+        <span class="card-title"><?= t('maintenance') ?></span>
+        <a href="<?= BASE_URL ?>/?page=maintenance/add&vehicle_id=<?= $vehicle['id'] ?>" class="btn btn-outline btn-sm">+ <?= t('btn_add') ?></a>
       </div>
       <div style="overflow-x:auto;">
         <table class="data-table">
-          <thead><tr><th>Type</th><th>Date prévue</th><th>Coût</th><th>Statut</th></tr></thead>
+          <thead><tr><th><?= t('maintenance_type') ?></th><th><?= t('scheduled_date') ?></th><th><?= t('cost') ?></th><th><?= t('status') ?></th></tr></thead>
           <tbody>
             <?php foreach ($maintenance as $m): ?>
             <tr>
               <td style="font-weight:500;"><?= h($m['type_maintenance']) ?></td>
-              <td><?= $m['date_prevue'] ? date('d/m/Y', strtotime($m['date_prevue'])) : '—' ?></td>
-              <td><?= $m['cout'] ? number_format($m['cout'],0,',',' ').' MAD' : '—' ?></td>
+              <td dir="ltr"><?= $m['date_prevue'] ? date('d/m/Y', strtotime($m['date_prevue'])) : '—' ?></td>
+              <td dir="ltr"><?= $m['cout'] ? number_format($m['cout'],0,',',' ').' MAD' : '—' ?></td>
               <td><?= status_badge($m['statut']) ?></td>
             </tr>
             <?php endforeach; ?>
             <?php if (empty($maintenance)): ?>
-            <tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:24px;">Aucune maintenance</td></tr>
+            <tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:24px;"><?= t('no_data') ?></td></tr>
             <?php endif; ?>
           </tbody>
         </table>

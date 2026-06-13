@@ -1,8 +1,8 @@
-<?php $pageTitle = $client['prenom'].' '.$client['nom']; $pageBreadcrumb = 'Clients › Détails'; ?>
+<?php $pageTitle = $client['prenom'].' '.$client['nom']; $pageBreadcrumb = t('clients').' › '.t('client_detail'); ?>
 
 <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:20px;">
-  <a href="<?= BASE_URL ?>/?page=clients/edit&id=<?= $client['id'] ?>" class="btn btn-outline">Modifier</a>
-  <a href="<?= BASE_URL ?>/?page=reservations/add&client_id=<?= $client['id'] ?>" class="btn btn-emerald">Nouvelle réservation</a>
+  <a href="<?= BASE_URL ?>/?page=clients/edit&id=<?= $client['id'] ?>" class="btn btn-outline"><?= t('btn_edit') ?></a>
+  <a href="<?= BASE_URL ?>/?page=reservations/add&client_id=<?= $client['id'] ?>" class="btn btn-emerald"><?= t('add_reservation') ?></a>
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;margin-bottom:24px;">
@@ -17,19 +17,19 @@
       <hr class="divider">
       <dl style="margin-top:16px;">
         <?php $rows = [
-          ['CIN', $client['cin']??'—'],
-          ['Téléphone', $client['telephone']??'—'],
-          ['Email', $client['email']??'—'],
-          ['Adresse', $client['adresse']??'—'],
-          ['Ville', $client['ville']??'—'],
-          ['N° permis', $client['permis_numero']??'—'],
-          ['Catégorie permis', $client['permis_categorie']??'—'],
-          ['Expiration permis', $client['permis_expiration'] ? date('d/m/Y', strtotime($client['permis_expiration'])) : '—'],
+          [t('cin'), $client['cin']??'—'],
+          [t('phone'), $client['telephone']??'—'],
+          [t('email'), $client['email']??'—'],
+          [t('address'), $client['adresse']??'—'],
+          [t('city'), $client['ville']??'—'],
+          [t('license_number'), $client['permis_numero']??'—'],
+          [t('license_category'), $client['permis_categorie']??'—'],
+          [t('license_expiry'), $client['permis_expiration'] ? date('d/m/Y', strtotime($client['permis_expiration'])) : '—'],
         ];
         foreach ($rows as [$label, $val]): ?>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f8fafc;">
           <dt style="font-size:12px;color:#94a3b8;font-weight:500;"><?= $label ?></dt>
-          <dd style="font-size:13px;color:#0f172a;font-weight:500;margin:0;text-align:right;"><?= h((string)$val) ?></dd>
+          <dd style="font-size:13px;color:#0f172a;font-weight:500;margin:0;text-align:right;" dir="ltr"><?= h((string)$val) ?></dd>
         </div>
         <?php endforeach; ?>
       </dl>
@@ -41,12 +41,12 @@
 
   <div class="card">
     <div class="card-header">
-      <span class="card-title">Historique des réservations</span>
-      <a href="<?= BASE_URL ?>/?page=reservations/add&client_id=<?= $client['id'] ?>" class="btn btn-outline btn-sm">+ Nouvelle</a>
+      <span class="card-title"><?= t('reservation_history') ?></span>
+      <a href="<?= BASE_URL ?>/?page=reservations/add&client_id=<?= $client['id'] ?>" class="btn btn-outline btn-sm">+ <?= t('btn_new') ?></a>
     </div>
     <div style="overflow-x:auto;">
       <table class="data-table">
-        <thead><tr><th>Référence</th><th>Véhicule</th><th>Début</th><th>Fin prévue</th><th>Montant</th><th>Statut</th></tr></thead>
+        <thead><tr><th><?= t('reference') ?></th><th><?= t('vehicle') ?></th><th><?= t('start_date') ?></th><th><?= t('end_date') ?></th><th><?= t('amount') ?></th><th><?= t('status') ?></th></tr></thead>
         <tbody>
           <?php foreach ($reservations as $r): ?>
           <tr>
@@ -55,14 +55,14 @@
               <div style="font-weight:500;"><?= h($r['marque'].' '.$r['modele']) ?></div>
               <div style="font-size:12px;color:#94a3b8;"><?= h($r['numero']??'') ?></div>
             </td>
-            <td><?= date('d/m/Y', strtotime($r['date_debut'])) ?></td>
-            <td><?= $r['date_fin_prevue'] ? date('d/m/Y', strtotime($r['date_fin_prevue'])) : '—' ?></td>
-            <td><?= $r['montant_total'] ? number_format($r['montant_total'],0,',',' ').' MAD' : '—' ?></td>
+            <td dir="ltr"><?= date('d/m/Y', strtotime($r['date_debut'])) ?></td>
+            <td dir="ltr"><?= $r['date_fin_prevue'] ? date('d/m/Y', strtotime($r['date_fin_prevue'])) : '—' ?></td>
+            <td dir="ltr"><?= $r['montant_total'] ? number_format($r['montant_total'],0,',',' ').' MAD' : '—' ?></td>
             <td><?= status_badge($r['statut']) ?></td>
           </tr>
           <?php endforeach; ?>
           <?php if (empty($reservations)): ?>
-          <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px;">Aucune réservation</td></tr>
+          <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px;"><?= t('no_reservations') ?></td></tr>
           <?php endif; ?>
         </tbody>
       </table>

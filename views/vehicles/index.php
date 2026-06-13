@@ -9,11 +9,11 @@
 // Helper: status badge config
 function vehicleStatusBadge(string $statut): array {
     return match($statut) {
-        'disponible'   => ['bg' => 'bg-emerald-600',  'text' => 'text-white',     'dot' => 'bg-emerald-300', 'label' => 'Disponible',   'pulse' => true],
-        'loué'         => ['bg' => 'bg-blue-600',     'text' => 'text-white',     'dot' => 'bg-blue-300',    'label' => 'Loué',         'pulse' => false],
-        'maintenance'  => ['bg' => 'bg-amber-500',    'text' => 'text-white',     'dot' => '',               'label' => 'Maintenance',  'pulse' => false],
-        'indisponible' => ['bg' => 'bg-red-600',      'text' => 'text-white',     'dot' => '',               'label' => 'Indisponible', 'pulse' => false],
-        default        => ['bg' => 'bg-slate-500',    'text' => 'text-white',     'dot' => '',               'label' => ucfirst($statut), 'pulse' => false],
+        'disponible'   => ['bg' => 'bg-emerald-600',  'text' => 'text-white',     'dot' => 'bg-emerald-300', 'label' => t('status_disponible'),   'pulse' => true],
+        'loué'         => ['bg' => 'bg-blue-600',     'text' => 'text-white',     'dot' => 'bg-blue-300',    'label' => t('status_loue'),         'pulse' => false],
+        'maintenance'  => ['bg' => 'bg-amber-500',    'text' => 'text-white',     'dot' => '',               'label' => t('status_maintenance'),  'pulse' => false],
+        'indisponible' => ['bg' => 'bg-red-600',      'text' => 'text-white',     'dot' => '',               'label' => t('status_indisponible'), 'pulse' => false],
+        default        => ['bg' => 'bg-slate-500',    'text' => 'text-white',     'dot' => '',               'label' => ucfirst($statut),         'pulse' => false],
     };
 }
 
@@ -51,15 +51,15 @@ function brandGradient(string $marque): string {
 <!-- Page Header -->
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
   <div>
-    <h1 class="text-2xl font-bold text-slate-900">Flotte active</h1>
+    <h1 class="text-2xl font-bold text-slate-900"><?= t('active_fleet') ?></h1>
     <p class="text-sm text-slate-500 mt-1">
-      Statut en temps réel · <span class="font-semibold text-slate-700"><?= $total ?></span> véhicule<?= $total > 1 ? 's' : '' ?> dans le catalogue
+      Statut en temps réel · <span class="font-semibold text-slate-700"><?= $total ?></span> <?= t('vehicles') ?>
     </p>
   </div>
   <a href="<?= BASE_URL ?>/?page=vehicles/add"
      class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-700 active:scale-95 transition-all">
     <span class="material-symbols-outlined text-[18px]">add_circle</span>
-    Ajouter un véhicule
+    <?= t('add_vehicle') ?>
   </a>
 </div>
 
@@ -72,14 +72,14 @@ function brandGradient(string $marque): string {
     <div class="relative flex-1 min-w-[200px]">
       <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
       <input type="text" name="search" value="<?= h($search) ?>"
-             placeholder="Recherche véhicules, immat…"
+             placeholder="<?= t('search_vehicle') ?>"
              class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none">
     </div>
 
     <!-- Brand -->
     <select name="marque" onchange="this.form.submit()"
             class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none">
-      <option value="">Marque : Toutes</option>
+      <option value=""><?= t('vehicle_brand') ?>: <?= t('all') ?></option>
       <?php foreach ($brands as $b): ?>
       <option value="<?= h($b) ?>" <?= $marque===$b ? 'selected' : '' ?>><?= h($b) ?></option>
       <?php endforeach; ?>
@@ -88,7 +88,7 @@ function brandGradient(string $marque): string {
     <!-- Category -->
     <select name="categorie" onchange="this.form.submit()"
             class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none">
-      <option value="">Catégorie : Toutes</option>
+      <option value=""><?= t('vehicle_category') ?>: <?= t('all') ?></option>
       <?php foreach(['économique','berline','SUV','premium','utilitaire'] as $c): ?>
       <option value="<?= $c ?>" <?= $categorie===$c ? 'selected' : '' ?>><?= ucfirst($c) ?></option>
       <?php endforeach; ?>
@@ -97,20 +97,20 @@ function brandGradient(string $marque): string {
     <!-- Status -->
     <select name="statut" onchange="this.form.submit()"
             class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none">
-      <option value="">Statut : Tous</option>
+      <option value=""><?= t('status') ?>: <?= t('all') ?></option>
       <?php foreach(['disponible','loué','maintenance','indisponible'] as $s): ?>
       <option value="<?= $s ?>" <?= $statut===$s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
       <?php endforeach; ?>
     </select>
 
     <button type="submit" class="px-4 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-700 transition-colors">
-      Filtrer
+      <?= t('btn_filter') ?>
     </button>
     <?php if ($search || $statut || $categorie || $marque): ?>
     <a href="<?= BASE_URL ?>/?page=vehicles"
        class="flex items-center gap-1.5 px-4 py-2.5 text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors">
       <span class="material-symbols-outlined text-[18px]">refresh</span>
-      Réinitialiser
+      <?= t('btn_reset') ?>
     </a>
     <?php endif; ?>
   </form>
@@ -120,7 +120,7 @@ function brandGradient(string $marque): string {
 <?php if (empty($rows)): ?>
 <div class="bg-white rounded-xl border border-slate-200 p-16 text-center">
   <span class="material-symbols-outlined text-slate-300 text-[64px]">directions_car</span>
-  <p class="text-slate-500 mt-4 text-sm">Aucun véhicule trouvé</p>
+  <p class="text-slate-500 mt-4 text-sm"><?= t('vehicle_not_found_list') ?></p>
 </div>
 <?php else: ?>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -174,7 +174,7 @@ function brandGradient(string $marque): string {
       <div class="flex flex-wrap gap-1.5 mb-6">
         <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1">
           <span class="material-symbols-outlined text-[13px]">person</span>
-          <?= (int)$v['nb_places'] ?> places
+          <?= (int)$v['nb_places'] ?> <?= t('portal_seats') ?>
         </span>
         <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1">
           <span class="material-symbols-outlined text-[13px]"><?= transIcon($transmission) ?></span>
@@ -194,24 +194,23 @@ function brandGradient(string $marque): string {
       <!-- Footer: price + actions -->
       <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
         <div>
-          <span class="text-xl font-bold text-slate-900"><?= number_format($v['prix_jour'], 0, ',', ' ') ?></span>
-          <span class="text-xs text-slate-400 uppercase ml-1 font-semibold">MAD/j</span>
+          <span class="text-xl font-bold text-slate-900 num"><?= number_format($v['prix_jour'], 0, ',', ' ') ?> MAD/j</span>
         </div>
         <div class="flex gap-2">
           <a href="<?= BASE_URL ?>/?page=vehicles/show&id=<?= $v['id'] ?>"
              class="p-2 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors"
-             title="Voir détails">
+             title="<?= t('btn_view') ?>">
             <span class="material-symbols-outlined text-[18px]">visibility</span>
           </a>
           <a href="<?= BASE_URL ?>/?page=vehicles/edit&id=<?= $v['id'] ?>"
              class="p-2 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors"
-             title="Modifier">
+             title="<?= t('btn_edit') ?>">
             <span class="material-symbols-outlined text-[18px]">edit</span>
           </a>
           <a href="<?= BASE_URL ?>/?page=vehicles/delete&id=<?= $v['id'] ?>"
              class="p-2 border border-red-100 rounded-lg text-red-400 hover:bg-red-50 transition-colors"
-             title="Supprimer"
-             onclick="return confirm('Supprimer ce véhicule ?')">
+             title="<?= t('btn_delete') ?>"
+             onclick="return confirm('<?= t('confirm_delete_vehicle') ?>')">
             <span class="material-symbols-outlined text-[18px]">delete</span>
           </a>
         </div>
@@ -227,7 +226,7 @@ function brandGradient(string $marque): string {
 <div class="mt-10 flex items-center justify-between border-t border-slate-200 pt-6">
   <p class="text-sm text-slate-500">
     Affichage <span class="font-semibold text-slate-700"><?= ($offset + 1) ?>–<?= min($offset + $per_page, $total) ?></span>
-    sur <span class="font-semibold text-slate-700"><?= $total ?></span> véhicules
+    sur <span class="font-semibold text-slate-700"><?= $total ?></span> <?= t('vehicles') ?>
   </p>
   <div class="flex gap-1.5">
     <?php

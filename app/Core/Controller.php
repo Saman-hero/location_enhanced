@@ -62,7 +62,7 @@ abstract class Controller
     {
         $this->requireAuth();
         if (($_SESSION['user_role'] ?? '') !== 'admin') {
-            $this->flash('danger', 'Accès réservé aux administrateurs.');
+            $this->flash('danger', t('access_denied'));
             $this->redirect('dashboard');
         }
     }

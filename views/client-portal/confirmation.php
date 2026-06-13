@@ -1,4 +1,4 @@
-<?php $pageTitle = 'Réservation confirmée'; ?>
+<?php $pageTitle = t('portal_confirmed'); ?>
 <style>
   /* ════════════ PRINT STYLES ════════════ */
   @media print {
@@ -176,13 +176,13 @@
         <svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 17H5l-2-4V7a1 1 0 011-1h14a1 1 0 011 1v6l-2 4z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>
       </div>
       <div>
-        <div style="font-weight:800;font-size:16px;color:#0f172a;">AutoLocation</div>
-        <div style="font-size:11px;color:#64748b;">Reçu de réservation</div>
+        <div style="font-weight:800;font-size:16px;color:#0f172a;"><?= t('app_name') ?></div>
+        <div style="font-size:11px;color:#64748b;"><?= t('portal_receipt_title') ?></div>
       </div>
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;font-weight:700;color:#0f172a;">Réf. <?= h($reservation['reference']) ?></div>
-      <div style="font-size:11px;color:#64748b;">Imprimé le <?= date('d/m/Y à H:i') ?></div>
+      <div style="font-size:11px;color:#64748b;"><?= t('portal_printed_on') ?> <?= date('d/m/Y à H:i') ?></div>
     </div>
   </div>
 
@@ -191,8 +191,8 @@
     <div class="success-circle">
       <svg width="40" height="40" fill="none" stroke="#fff" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
-    <h1 style="font-size:28px;font-weight:800;color:#0f172a;margin:0 0 8px;">Réservation enregistrée !</h1>
-    <p style="font-size:16px;color:#64748b;margin:0;">Votre demande a bien été reçue. L'agence vous contactera pour confirmer.</p>
+    <h1 style="font-size:28px;font-weight:800;color:#0f172a;margin:0 0 8px;"><?= t('portal_confirmed') ?></h1>
+    <p style="font-size:16px;color:#64748b;margin:0;"><?= t('portal_confirmed_sub') ?></p>
     <div class="ref-badge">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>
       Réf. <?= h($reservation['reference']) ?>
@@ -229,33 +229,33 @@
     <div class="confirm-card-body">
       <div class="detail-grid">
         <div class="detail-item">
-          <span class="detail-label">Date de départ</span>
-          <span class="detail-value"><?= date('d/m/Y', strtotime($reservation['date_debut'])) ?></span>
-          <span style="font-size:12px;color:#94a3b8;"><?= date('H:i', strtotime($reservation['date_debut'])) ?></span>
+          <span class="detail-label"><?= t('portal_date_from') ?></span>
+          <span class="detail-value num"><?= date('d/m/Y', strtotime($reservation['date_debut'])) ?></span>
+          <span class="num" style="font-size:12px;color:#94a3b8;"><?= date('H:i', strtotime($reservation['date_debut'])) ?></span>
         </div>
         <div class="detail-item">
-          <span class="detail-label">Date de retour</span>
-          <span class="detail-value"><?= date('d/m/Y', strtotime($reservation['date_fin_prevue'])) ?></span>
-          <span style="font-size:12px;color:#94a3b8;"><?= date('H:i', strtotime($reservation['date_fin_prevue'])) ?></span>
+          <span class="detail-label"><?= t('portal_date_to') ?></span>
+          <span class="detail-value num"><?= date('d/m/Y', strtotime($reservation['date_fin_prevue'])) ?></span>
+          <span class="num" style="font-size:12px;color:#94a3b8;"><?= date('H:i', strtotime($reservation['date_fin_prevue'])) ?></span>
         </div>
         <?php if (!empty($reservation['lieu_depart'])): ?>
         <div class="detail-item">
-          <span class="detail-label">Lieu de départ</span>
+          <span class="detail-label"><?= t('portal_departure') ?></span>
           <span class="detail-value"><?= h($reservation['lieu_depart']) ?></span>
         </div>
         <?php endif; ?>
         <?php if (!empty($reservation['lieu_retour'])): ?>
         <div class="detail-item">
-          <span class="detail-label">Lieu de retour</span>
+          <span class="detail-label"><?= t('portal_return') ?></span>
           <span class="detail-value"><?= h($reservation['lieu_retour']) ?></span>
         </div>
         <?php endif; ?>
         <div class="detail-item">
-          <span class="detail-label">Durée</span>
-          <span class="detail-value"><?= (int)($reservation['nb_jours']??1) ?> jour(s)</span>
+          <span class="detail-label"><?= t('nb_days') ?></span>
+          <span class="detail-value"><?= (int)($reservation['nb_jours']??1) ?> <?= t('days') ?></span>
         </div>
         <div class="detail-item">
-          <span class="detail-label">Immatriculation</span>
+          <span class="detail-label"><?= t('vehicle_plate') ?></span>
           <span class="detail-value"><?= h($reservation['immatriculation']??$reservation['vehicle_numero']??'—') ?></span>
         </div>
       </div>
@@ -268,7 +268,7 @@
     <!-- Client info -->
     <div class="confirm-card">
       <div class="confirm-card-header">
-        <span>Client</span>
+        <span><?= t('client') ?></span>
         <svg width="15" height="15" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       </div>
       <div class="confirm-card-body" style="padding:20px 24px;">
@@ -280,7 +280,7 @@
         ] as [$l,$v]): ?>
         <div style="display:flex;gap:8px;align-items:center;font-size:13px;margin-bottom:8px;color:#475569;">
           <span style="color:#94a3b8;min-width:44px;"><?= $l ?></span>
-          <span style="font-weight:500;color:#0f172a;"><?= h((string)$v) ?></span>
+          <span class="num" style="font-weight:500;color:#0f172a;"><?= h((string)$v) ?></span>
         </div>
         <?php endforeach; ?>
       </div>
@@ -289,29 +289,29 @@
     <!-- Price breakdown -->
     <div class="confirm-card">
       <div class="confirm-card-header">
-        <span>Récapitulatif</span>
+        <span><?= t('portal_summary') ?></span>
         <svg width="15" height="15" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
       </div>
       <div class="confirm-card-body" style="padding:20px 24px;">
         <div class="price-line">
-          <span><?= (int)($reservation['nb_jours']??1) ?> jour(s) × <?= number_format($reservation['prix_jour']??0,0,',',' ') ?> MAD</span>
-          <span><?= number_format($reservation['montant_total']??0,0,',',' ') ?> MAD</span>
+          <span class="num"><?= (int)($reservation['nb_jours']??1) ?> <?= t('days') ?> × <?= number_format($reservation['prix_jour']??0,0,',',' ') ?> MAD</span>
+          <span class="num"><?= number_format($reservation['montant_total']??0,0,',',' ') ?> MAD</span>
         </div>
         <?php if (($reservation['caution']??0) > 0): ?>
         <div class="price-line">
-          <span>Caution <span style="font-size:11px;color:#94a3b8;">(remboursable)</span></span>
-          <span><?= number_format($reservation['caution'],0,',',' ') ?> MAD</span>
+          <span><?= t('portal_deposit_ref') ?></span>
+          <span class="num"><?= number_format($reservation['caution'],0,',',' ') ?> MAD</span>
         </div>
         <?php endif; ?>
         <?php if (($reservation['frais_extra']??0) > 0): ?>
         <div class="price-line">
-          <span>Frais supplémentaires</span>
-          <span><?= number_format($reservation['frais_extra'],0,',',' ') ?> MAD</span>
+          <span><?= t('extra_fees') ?></span>
+          <span class="num"><?= number_format($reservation['frais_extra'],0,',',' ') ?> MAD</span>
         </div>
         <?php endif; ?>
         <div class="price-line">
-          <span>Total</span>
-          <span><?= number_format(($reservation['montant_total']??0)+($reservation['caution']??0),0,',',' ') ?> MAD</span>
+          <span><?= t('total') ?></span>
+          <span class="num"><?= number_format(($reservation['montant_total']??0)+($reservation['caution']??0),0,',',' ') ?> MAD</span>
         </div>
       </div>
     </div>
@@ -320,28 +320,28 @@
   <!-- Next steps -->
   <div class="confirm-card no-print">
     <div class="confirm-card-header">
-      <span>Prochaines étapes</span>
+      <span><?= t('portal_next_steps') ?></span>
     </div>
     <div class="confirm-card-body">
       <div class="step">
         <div class="step-num">1</div>
         <div>
-          <div class="step-title">Confirmation par l'agence</div>
-          <div class="step-desc">Un conseiller va examiner votre demande et vous contactera par téléphone ou email sous 24h.</div>
+          <div class="step-title"><?= t('portal_agency_confirm') ?></div>
+          <div class="step-desc"><?= t('portal_agency_confirm_desc') ?></div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div>
-          <div class="step-title">Préparation du véhicule</div>
-          <div class="step-desc">Le véhicule sera nettoyé, contrôlé et prêt à la date et heure convenues.</div>
+          <div class="step-title"><?= t('portal_step2_title') ?></div>
+          <div class="step-desc"><?= t('portal_step2_desc') ?></div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div>
-          <div class="step-title">Remise des clés</div>
-          <div class="step-desc">Présentez-vous avec votre CIN et permis de conduire au lieu de départ indiqué.</div>
+          <div class="step-title"><?= t('portal_key_handover') ?></div>
+          <div class="step-desc"><?= t('portal_key_handover_desc') ?></div>
         </div>
       </div>
     </div>
@@ -351,18 +351,18 @@
   <div class="no-print" style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:16px 20px;margin-bottom:28px;display:flex;gap:12px;align-items:flex-start;">
     <svg width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".5" fill="#f59e0b"/></svg>
     <div style="font-size:13px;color:#92400e;">
-      <strong>Aucun paiement requis maintenant.</strong> Le règlement s'effectue directement à l'agence lors de la prise en charge du véhicule.
+      <?= t('portal_no_payment_now') ?>
     </div>
   </div>
 
   <div class="no-print" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
     <a href="<?= BASE_URL ?>/?page=client" class="btn btn-emerald" style="padding:12px 28px;font-size:15px;">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Retour aux véhicules
+      <?= t('portal_back_home') ?>
     </a>
     <button onclick="window.print()" class="btn btn-outline" style="padding:12px 28px;font-size:15px;">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-      Imprimer le reçu
+      <?= t('portal_print') ?>
     </button>
   </div>
 

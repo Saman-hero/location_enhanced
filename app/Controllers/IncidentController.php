@@ -46,7 +46,7 @@ class IncidentController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!$data['vehicle_id']) $errors[] = 'Sélectionnez un véhicule.';
+            if (!$data['vehicle_id']) $errors[] = t('err_select_vehicle');
 
             if (!$errors) {
                 $ref = 'SIN-' . date('Y') . '-' . str_pad(random_int(1,9999),4,'0',STR_PAD_LEFT);
@@ -62,7 +62,7 @@ class IncidentController extends Controller
                     'statut'          => $data['statut'],
                 ]);
                 $this->auditModel->log('Création sinistre', 'incidents', "Sinistre $ref créé (ID:$id)");
-                $this->flash('success', "Sinistre $ref créé.");
+                $this->flash('success', t('incident_added'));
                 $this->redirect('incidents');
             }
         }
@@ -75,7 +75,7 @@ class IncidentController extends Controller
         $this->requireAuth();
         $id       = (int)$this->query('id');
         $incident = $this->incidentModel->find($id);
-        if (!$incident) { $this->flash('danger', 'Sinistre introuvable.'); $this->redirect('incidents'); }
+        if (!$incident) { $this->flash('danger', t('incident_not_found')); $this->redirect('incidents'); }
 
         $errors   = [];
         $vehicles = $this->db->query("SELECT id,numero,marque,modele FROM vehicles ORDER BY marque")->fetchAll();
@@ -96,7 +96,7 @@ class IncidentController extends Controller
                     'statut'          => $data['statut'],
                 ]);
                 $this->auditModel->log('Modification sinistre', 'incidents', "{$incident['reference']} modifié");
-                $this->flash('success', 'Sinistre mis à jour.');
+                $this->flash('success', t('incident_updated'));
                 $this->redirect('incidents');
             }
         }
@@ -109,11 +109,11 @@ class IncidentController extends Controller
         $this->requireAuth();
         $id       = (int)$this->query('id');
         $incident = $this->incidentModel->find($id);
-        if (!$incident) { $this->flash('danger', 'Sinistre introuvable.'); $this->redirect('incidents'); }
+        if (!$incident) { $this->flash('danger', t('incident_not_found')); $this->redirect('incidents'); }
 
         $this->incidentModel->delete($id);
         $this->auditModel->log('Suppression sinistre', 'incidents', "{$incident['reference']} supprimé");
-        $this->flash('success', "Sinistre {$incident['reference']} supprimé.");
+        $this->flash('success', t('incident_deleted'));
         $this->redirect('incidents');
     }
 }

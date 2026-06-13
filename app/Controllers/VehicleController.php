@@ -62,11 +62,11 @@ class VehicleController extends Controller
     /** Upload one photo file array to Cloudinary (fallback: local). */
     private function uploadOnePhoto(array $file, array &$errors): ?string
     {
-        if ($file['error'] !== UPLOAD_ERR_OK) { $errors[] = 'Erreur lors du téléchargement d\'une photo.'; return null; }
-        if ($file['size'] > 5 * 1024 * 1024)  { $errors[] = 'Une photo dépasse la limite de 5 Mo.'; return null; }
+        if ($file['error'] !== UPLOAD_ERR_OK) { $errors[] = t('err_photo_upload'); return null; }
+        if ($file['size'] > 5 * 1024 * 1024)  { $errors[] = t('err_photo_size'); return null; }
         $mime    = mime_content_type($file['tmp_name']);
         $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
-        if (!isset($allowed[$mime])) { $errors[] = 'Format accepté : JPEG, PNG, WebP.'; return null; }
+        if (!isset($allowed[$mime])) { $errors[] = t('err_photo_format'); return null; }
 
         $cloudName = getenv('CLOUDINARY_CLOUD_NAME') ?: 'duuvvlak5';
         $apiKey    = getenv('CLOUDINARY_API_KEY')    ?: '984527874378622';
@@ -96,7 +96,7 @@ class VehicleController extends Controller
         $ext  = $allowed[$mime];
         $name = uniqid('vh_', true) . '.' . $ext;
         $dest = APP_PATH . '/uploads/vehicles/' . $name;
-        if (!move_uploaded_file($file['tmp_name'], $dest)) { $errors[] = 'Impossible de sauvegarder la photo.'; return null; }
+        if (!move_uploaded_file($file['tmp_name'], $dest)) { $errors[] = t('err_photo_save'); return null; }
         return $name;
     }
 
@@ -106,7 +106,7 @@ class VehicleController extends Controller
         $imageId   = (int)$this->query('image_id');
         $vehicleId = (int)$this->query('vehicle_id');
         $this->vehicleModel->deleteImage($imageId);
-        $this->flash('success', 'Photo supprimée.');
+        $this->flash('success', t('photo_deleted'));
         $this->redirect('vehicles/edit', ['id' => $vehicleId]);
     }
 
@@ -123,15 +123,15 @@ class VehicleController extends Controller
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
 
-            if (!trim($data['numero']))          $errors[] = 'Le numéro est obligatoire.';
-            if (!trim($data['marque']))          $errors[] = 'La marque est obligatoire.';
-            if (!trim($data['modele']))          $errors[] = 'Le modèle est obligatoire.';
-            if (!is_numeric($data['prix_jour'])) $errors[] = 'Le prix/jour doit être un nombre.';
+            if (!trim($data['numero']))          $errors[] = t('err_numero_required');
+            if (!trim($data['marque']))          $errors[] = t('err_marque_required');
+            if (!trim($data['modele']))          $errors[] = t('err_modele_required');
+            if (!is_numeric($data['prix_jour'])) $errors[] = t('err_prix_required');
 
             if (!$errors) {
                 $chk = $this->db->prepare("SELECT id FROM vehicles WHERE numero=?");
                 $chk->execute([$data['numero']]);
-                if ($chk->fetch()) $errors[] = 'Ce numéro de véhicule existe déjà.';
+                if ($chk->fetch()) $errors[] = t('err_numero_exists');
             }
 
             $photos = $this->handleMultiplePhotoUploads('photos', $errors);
@@ -160,7 +160,7 @@ class VehicleController extends Controller
                     $this->vehicleModel->addImage($id, $url, $i);
                 }
                 $this->auditModel->log('Création véhicule', 'vehicles', "Véhicule {$data['numero']} ajouté (ID:$id)");
-                $this->flash('success', "Véhicule {$data['numero']} ajouté avec succès.");
+                $this->flash('success', t('vehicle_added'));
                 $this->redirect('vehicles');
             }
         }
@@ -173,16 +173,16 @@ class VehicleController extends Controller
         $this->requireAuth();
         $id      = (int)$this->query('id');
         $vehicle = $this->vehicleModel->find($id);
-        if (!$vehicle) { $this->flash('danger', 'Véhicule introuvable.'); $this->redirect('vehicles'); }
+        if (!$vehicle) { $this->flash('danger', t('vehicle_not_found')); $this->redirect('vehicles'); }
 
         $errors = [];
         $data   = $vehicle;
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!trim($data['marque']))          $errors[] = 'La marque est obligatoire.';
-            if (!trim($data['modele']))          $errors[] = 'Le modèle est obligatoire.';
-            if (!is_numeric($data['prix_jour'])) $errors[] = 'Le prix/jour doit être un nombre.';
+            if (!trim($data['marque']))          $errors[] = t('err_marque_required');
+            if (!trim($data['modele']))          $errors[] = t('err_modele_required');
+            if (!is_numeric($data['prix_jour'])) $errors[] = t('err_prix_required');
 
             $newPhotos = $this->handleMultiplePhotoUploads('photos', $errors);
 
@@ -216,7 +216,7 @@ class VehicleController extends Controller
                     'image_url'      => $coverUrl,
                 ]);
                 $this->auditModel->log('Modification véhicule', 'vehicles', "Véhicule {$data['numero']} modifié");
-                $this->flash('success', "Véhicule {$data['numero']} mis à jour.");
+                $this->flash('success', t('vehicle_updated'));
                 $this->redirect('vehicles/edit', ['id' => $id]);
             }
         }
@@ -230,7 +230,7 @@ class VehicleController extends Controller
         $this->requireAuth();
         $id      = (int)$this->query('id');
         $vehicle = $this->vehicleModel->find($id);
-        if (!$vehicle) { $this->flash('danger', 'Véhicule introuvable.'); $this->redirect('vehicles'); }
+        if (!$vehicle) { $this->flash('danger', t('vehicle_not_found')); $this->redirect('vehicles'); }
 
         $reservations = $this->db->prepare(
             "SELECT r.*, c.nom, c.prenom FROM reservations r JOIN clients c ON c.id=r.client_id
@@ -253,11 +253,11 @@ class VehicleController extends Controller
         $this->requireAuth();
         $id      = (int)$this->query('id');
         $vehicle = $this->vehicleModel->find($id);
-        if (!$vehicle) { $this->flash('danger', 'Véhicule introuvable.'); $this->redirect('vehicles'); }
+        if (!$vehicle) { $this->flash('danger', t('vehicle_not_found')); $this->redirect('vehicles'); }
 
         $this->vehicleModel->delete($id);
         $this->auditModel->log('Suppression véhicule', 'vehicles', "Véhicule {$vehicle['numero']} supprimé");
-        $this->flash('success', "Véhicule {$vehicle['numero']} supprimé.");
+        $this->flash('success', t('vehicle_deleted'));
         $this->redirect('vehicles');
     }
 }

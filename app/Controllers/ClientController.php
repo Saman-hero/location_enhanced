@@ -42,8 +42,8 @@ class ClientController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!trim($data['nom']))    $errors[] = 'Le nom est obligatoire.';
-            if (!trim($data['prenom'])) $errors[] = 'Le prénom est obligatoire.';
+            if (!trim($data['nom']))    $errors[] = t('err_nom_required');
+            if (!trim($data['prenom'])) $errors[] = t('err_prenom_required');
 
             if (!$errors) {
                 $id = $this->clientModel->create([
@@ -63,7 +63,7 @@ class ClientController extends Controller
                     'notes'             => $data['notes'],
                 ]);
                 $this->auditModel->log('Création client', 'clients', "{$data['nom']} {$data['prenom']} ajouté (ID:$id)");
-                $this->flash('success', "Client {$data['nom']} {$data['prenom']} ajouté.");
+                $this->flash('success', t('client_added'));
                 $this->redirect('clients');
             }
         }
@@ -76,15 +76,15 @@ class ClientController extends Controller
         $this->requireAuth();
         $id     = (int)$this->query('id');
         $client = $this->clientModel->find($id);
-        if (!$client) { $this->flash('danger', 'Client introuvable.'); $this->redirect('clients'); }
+        if (!$client) { $this->flash('danger', t('client_not_found')); $this->redirect('clients'); }
 
         $errors = [];
         $data   = $client;
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!trim($data['nom']))    $errors[] = 'Le nom est obligatoire.';
-            if (!trim($data['prenom'])) $errors[] = 'Le prénom est obligatoire.';
+            if (!trim($data['nom']))    $errors[] = t('err_nom_required');
+            if (!trim($data['prenom'])) $errors[] = t('err_prenom_required');
 
             if (!$errors) {
                 $this->clientModel->update($id, [
@@ -104,7 +104,7 @@ class ClientController extends Controller
                     'notes'             => $data['notes'],
                 ]);
                 $this->auditModel->log('Modification client', 'clients', "{$data['nom']} {$data['prenom']} modifié");
-                $this->flash('success', 'Client mis à jour.');
+                $this->flash('success', t('client_updated'));
                 $this->redirect('clients');
             }
         }
@@ -117,7 +117,7 @@ class ClientController extends Controller
         $this->requireAuth();
         $id     = (int)$this->query('id');
         $client = $this->clientModel->find($id);
-        if (!$client) { $this->flash('danger', 'Client introuvable.'); $this->redirect('clients'); }
+        if (!$client) { $this->flash('danger', t('client_not_found')); $this->redirect('clients'); }
 
         $stmt = $this->db->prepare(
             "SELECT r.*, v.marque, v.modele, v.numero FROM reservations r
@@ -135,11 +135,11 @@ class ClientController extends Controller
         $this->requireAuth();
         $id     = (int)$this->query('id');
         $client = $this->clientModel->find($id);
-        if (!$client) { $this->flash('danger', 'Client introuvable.'); $this->redirect('clients'); }
+        if (!$client) { $this->flash('danger', t('client_not_found')); $this->redirect('clients'); }
 
         $this->clientModel->delete($id);
         $this->auditModel->log('Suppression client', 'clients', "{$client['nom']} {$client['prenom']} supprimé");
-        $this->flash('success', "Client {$client['nom']} supprimé.");
+        $this->flash('success', t('client_deleted'));
         $this->redirect('clients');
     }
 }

@@ -53,8 +53,8 @@ class PaymentController extends Controller
 
         if ($this->isPost()) {
             $data = array_merge($data, $_POST);
-            if (!$data['reservation_id'])                          $errors[] = 'Sélectionnez une réservation.';
-            if (!is_numeric($data['montant']) || $data['montant'] <= 0) $errors[] = 'Montant invalide.';
+            if (!$data['reservation_id'])                          $errors[] = t('err_select_reservation');
+            if (!is_numeric($data['montant']) || $data['montant'] <= 0) $errors[] = t('err_amount_invalid');
 
             if (!$errors) {
                 $id = $this->paymentModel->create([
@@ -66,7 +66,7 @@ class PaymentController extends Controller
                     'notes'          => $data['notes'],
                 ]);
                 $this->auditModel->log('Création paiement', 'payments', "Paiement {$data['montant']} MAD (ID:$id)");
-                $this->flash('success', "Paiement de {$data['montant']} MAD enregistré.");
+                $this->flash('success', t('payment_added'));
                 $this->redirect('payments');
             }
         }
