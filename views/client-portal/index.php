@@ -82,7 +82,8 @@
 
   <div class="vehicles-grid">
     <?php foreach ($vehicles as $v): ?>
-    <div class="vehicle-card">
+    <a href="<?= BASE_URL ?>/?page=client/reserve&vehicle_id=<?= $v['id'] ?>&date_debut=<?= urlencode($dateDebut) ?>&date_fin=<?= urlencode($dateFin) ?>"
+       class="vehicle-card" style="text-decoration:none;color:inherit;display:block;">
 
       <!-- Image -->
       <?php if (!empty($v['image_url'])): ?>
@@ -150,7 +151,7 @@
         </div>
 
       </div>
-    </div>
+    </a>
     <?php endforeach; ?>
   </div>
 
