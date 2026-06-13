@@ -208,7 +208,7 @@ $jLabel = t('days');
       <div class="spec-card">
         <div class="spec-icon"><svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg></div>
         <div class="spec-label"><?= t('vehicle_mileage') ?></div>
-        <div class="spec-value"><?= number_format($vehicle['kilometrage']??0,0,',',' ') ?> km</div>
+        <div class="spec-value num"><?= number_format($vehicle['kilometrage']??0,0,',',' ') ?> km</div>
       </div>
     </div>
 
