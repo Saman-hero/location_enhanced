@@ -104,6 +104,7 @@ return [
     'active_reservations'    => 'Active Reservations',
     'monthly_revenue'        => 'Monthly Revenue',
     'active_clients'         => 'Active Clients',
+    'visit_count'            => 'Visit Count',
     'open_incidents'         => 'Open Incidents',
     'util_rate'              => 'Utilization Rate',
     'available'              => 'Available',

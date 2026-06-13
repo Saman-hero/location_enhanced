@@ -7,6 +7,9 @@ class Payment extends Model
 {
     protected string $table = 'paiements';
 
+    // Liste paginée des paiements avec recherche (référence réservation,
+    // nom/prénom client). Pagination manuelle car la requête utilise
+    // des jointures avec reservations et clients.
     public function paginatedList(string $search, int $perPage, int $page): array
     {
         $where  = ['1=1'];

@@ -5,6 +5,8 @@ use App\Core\Controller;
 use App\Models\Vehicle;
 use App\Models\AuditLog;
 
+// Gère le CRUD des véhicules (liste/recherche, ajout, modification,
+// affichage détaillé, suppression) ainsi que l'upload des photos.
 class VehicleController extends Controller
 {
     private Vehicle  $vehicleModel;
@@ -17,6 +19,8 @@ class VehicleController extends Controller
         $this->auditModel   = new AuditLog($db);
     }
 
+    // Liste paginée des véhicules, avec recherche et filtres
+    // (statut, catégorie, marque) passés via l'URL (?search=...&statut=...)
     public function index(): void
     {
         $this->requireAuth();
@@ -100,6 +104,7 @@ class VehicleController extends Controller
         return $name;
     }
 
+    // Supprime une photo spécifique d'un véhicule (table vehicle_images)
     public function deleteImage(): void
     {
         $this->requireAuth();
@@ -110,6 +115,9 @@ class VehicleController extends Controller
         $this->redirect('vehicles/edit', ['id' => $vehicleId]);
     }
 
+    // Affiche le formulaire d'ajout (GET) et traite sa soumission (POST) :
+    // validation des champs, vérification d'unicité du numéro, upload
+    // des photos, création en base puis journalisation (audit log).
     public function create(): void
     {
         $this->requireAuth();
@@ -168,6 +176,9 @@ class VehicleController extends Controller
         $this->view('vehicles/create', compact('errors', 'data'));
     }
 
+    // Affiche le formulaire d'édition pré-rempli (GET) et traite sa
+    // soumission (POST) : mêmes validations que create(), met à jour
+    // la fiche véhicule et ajoute d'éventuelles nouvelles photos.
     public function edit(): void
     {
         $this->requireAuth();
@@ -225,6 +236,8 @@ class VehicleController extends Controller
         $this->view('vehicles/edit', compact('errors', 'data', 'id', 'vehicleImages'));
     }
 
+    // Affiche la fiche détaillée d'un véhicule : infos générales,
+    // ses 5 dernières réservations et ses 5 derniers entretiens.
     public function show(): void
     {
         $this->requireAuth();
@@ -248,6 +261,8 @@ class VehicleController extends Controller
         $this->view('vehicles/show', compact('vehicle', 'reservations', 'maintenance'));
     }
 
+    // Supprime un véhicule (confirmation côté vue via JS confirm())
+    // et enregistre l'action dans le journal d'audit.
     public function delete(): void
     {
         $this->requireAuth();

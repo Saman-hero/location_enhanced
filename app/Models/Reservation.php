@@ -7,6 +7,8 @@ class Reservation extends Model
 {
     protected string $table = 'reservations';
 
+    // Récupère une réservation avec les infos du véhicule et du client
+    // (jointures SQL avec vehicles et clients) pour la page "show".
     public function withDetails(int $id): ?array
     {
         $stmt = $this->db->prepare(
@@ -25,6 +27,9 @@ class Reservation extends Model
         return $stmt->fetch() ?: null;
     }
 
+    // Liste paginée des réservations avec recherche (référence, nom/prénom
+    // client, immatriculation véhicule) et filtre par statut. Pagination
+    // gérée manuellement ici car la requête nécessite des jointures.
     public function paginatedList(string $search, string $statut, int $perPage, int $page): array
     {
         $where  = ['1=1'];
@@ -71,6 +76,7 @@ class Reservation extends Model
         ];
     }
 
+    // Génère une référence unique de réservation : LOC-AAAA-XXXXX
     public function generateReference(): string
     {
         return 'LOC-' . date('Y') . '-' . str_pad(random_int(1, 99999), 5, '0', STR_PAD_LEFT);

@@ -104,6 +104,7 @@ return [
     'active_reservations'    => 'Réservations actives',
     'monthly_revenue'        => 'Revenus du mois',
     'active_clients'         => 'Clients actifs',
+    'visit_count'            => 'Nombre de visites',
     'open_incidents'         => 'Incidents ouverts',
     'util_rate'              => 'Taux d\'utilisation',
     'available'              => 'Disponible',

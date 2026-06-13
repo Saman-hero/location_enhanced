@@ -1,3 +1,7 @@
+<div style="text-align:right;color:#9ca3af;font-size:12px;margin-bottom:8px;">
+  <?= t('visit_count') ?>: <?= number_format($visitCount) ?>
+</div>
+
 <!-- KPI Row -->
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
 

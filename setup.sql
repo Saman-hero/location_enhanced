@@ -152,6 +152,15 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+-- ── app_settings ───────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS `app_settings` (
+  `key`   VARCHAR(50) PRIMARY KEY,
+  `value` VARCHAR(255) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB;
+
+INSERT INTO `app_settings` (`key`, `value`) VALUES ('visit_count', '0')
+  ON DUPLICATE KEY UPDATE `key` = `key`;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ── Seed Data ──────────────────────────────────────────────

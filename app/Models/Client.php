@@ -7,6 +7,8 @@ class Client extends Model
 {
     protected string $table = 'clients';
 
+    // Recherche multi-champs (nom, prénom, CIN, téléphone, email) + filtre
+    // statut, avec pagination générique héritée du Model parent.
     public function paginatedList(string $search, string $statut, int $perPage, int $page): array
     {
         $where  = ['1=1'];
@@ -19,6 +21,8 @@ class Client extends Model
         return $this->paginate(implode(' AND ', $where), $params, $perPage, $page, 'id DESC');
     }
 
+    // Liste simplifiée (id, nom, prénom, CIN) pour remplir les listes
+    // déroulantes des formulaires (ex: choix du client dans une réservation).
     public function forSelect(): array
     {
         return $this->query("SELECT id, nom, prenom, cin FROM clients ORDER BY nom, prenom");

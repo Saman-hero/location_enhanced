@@ -5,6 +5,8 @@ use App\Core\Controller;
 use App\Models\Client;
 use App\Models\AuditLog;
 
+// Gère le CRUD des clients (particuliers/entreprises) : liste/recherche,
+// création, modification, fiche détaillée avec historique des réservations.
 class ClientController extends Controller
 {
     private Client   $clientModel;
@@ -17,6 +19,8 @@ class ClientController extends Controller
         $this->auditModel  = new AuditLog($db);
     }
 
+    // Liste paginée des clients, avec recherche (nom, prénom, CIN,
+    // téléphone, email) et filtre par statut (actif/inactif/blacklisté).
     public function index(): void
     {
         $this->requireAuth();
@@ -28,6 +32,8 @@ class ClientController extends Controller
         $this->view('clients/index', array_merge($result, compact('search', 'statut', 'flash')));
     }
 
+    // Formulaire de création d'un client (CIN, permis de conduire,
+    // particulier ou entreprise). Validation : nom et prénom obligatoires.
     public function create(): void
     {
         $this->requireAuth();
@@ -71,6 +77,7 @@ class ClientController extends Controller
         $this->view('clients/create', compact('errors', 'data'));
     }
 
+    // Formulaire de modification d'un client (mêmes champs que create)
     public function edit(): void
     {
         $this->requireAuth();
@@ -112,6 +119,8 @@ class ClientController extends Controller
         $this->view('clients/edit', compact('errors', 'data', 'id'));
     }
 
+    // Fiche détaillée d'un client : infos personnelles + historique
+    // complet de ses réservations (jointure avec vehicles).
     public function show(): void
     {
         $this->requireAuth();
@@ -130,6 +139,7 @@ class ClientController extends Controller
         $this->view('clients/show', compact('client', 'reservations'));
     }
 
+    // Supprime un client et journalise l'action
     public function delete(): void
     {
         $this->requireAuth();

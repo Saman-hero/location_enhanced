@@ -5,6 +5,8 @@ use App\Core\Controller;
 use App\Models\Payment;
 use App\Models\AuditLog;
 
+// Gère l'enregistrement et la consultation des paiements liés aux
+// réservations (acomptes, soldes, frais supplémentaires).
 class PaymentController extends Controller
 {
     private Payment  $paymentModel;
@@ -17,6 +19,8 @@ class PaymentController extends Controller
         $this->auditModel   = new AuditLog($db);
     }
 
+    // Liste paginée des paiements (avec recherche) + totaux : montant
+    // cumulé sur l'ensemble des paiements et sur le mois en cours.
     public function index(): void
     {
         $this->requireAuth();
@@ -33,6 +37,9 @@ class PaymentController extends Controller
         $this->view('payments/index', array_merge($result, compact('search', 'flash', 'totalAll', 'totalMonth')));
     }
 
+    // Formulaire d'enregistrement d'un paiement : choix d'une réservation
+    // active (non annulée/terminée), montant, mode de paiement et type
+    // (acompte/solde/extra). Validation : montant numérique > 0.
     public function create(): void
     {
         $this->requireAuth();

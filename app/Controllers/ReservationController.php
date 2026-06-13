@@ -7,6 +7,8 @@ use App\Models\Vehicle;
 use App\Models\Client;
 use App\Models\AuditLog;
 
+// Gère le cycle de vie des réservations : liste/recherche, création
+// (calcul automatique du montant), modification, détails, suppression.
 class ReservationController extends Controller
 {
     private Reservation $reservationModel;
@@ -23,6 +25,8 @@ class ReservationController extends Controller
         $this->auditModel       = new AuditLog($db);
     }
 
+    // Liste paginée des réservations, avec recherche (référence, client,
+    // immatriculation) et filtre par statut.
     public function index(): void
     {
         $this->requireAuth();
@@ -34,6 +38,10 @@ class ReservationController extends Controller
         $this->view('reservations/index', array_merge($result, compact('search', 'statut', 'flash')));
     }
 
+    // Formulaire de création d'une réservation.
+    // Calcule automatiquement : nombre de jours, prix journalier (copié
+    // du véhicule), caution et montant total = nb_jours * prix_jour.
+    // Génère une référence unique (LOC-AAAA-XXXXX).
     public function create(): void
     {
         $this->requireAuth();
@@ -53,7 +61,9 @@ class ReservationController extends Controller
                 $errors[] = t('err_date_order');
 
             if (!$errors) {
+                // Référence unique de la réservation (ex: LOC-2026-04231)
                 $ref     = $this->reservationModel->generateReference();
+                // Calcul de la durée et du montant total de la location
                 $d1      = new \DateTime($data['date_debut']);
                 $d2      = new \DateTime($data['date_fin_prevue']);
                 $nbJours = max(1, $d1->diff($d2)->days);
@@ -85,6 +95,9 @@ class ReservationController extends Controller
         $this->view('reservations/create', compact('errors', 'data', 'vehicles', 'clients'));
     }
 
+    // Formulaire de modification d'une réservation : permet aussi de
+    // saisir la date/km de retour effectif et des frais supplémentaires.
+    // Le montant total est recalculé à chaque sauvegarde.
     public function edit(): void
     {
         $this->requireAuth();
@@ -138,6 +151,8 @@ class ReservationController extends Controller
         $this->view('reservations/edit', compact('errors', 'data', 'vehicles', 'clients', 'id'));
     }
 
+    // Fiche détaillée d'une réservation : infos véhicule + client (via
+    // jointures SQL dans withDetails) et historique des paiements liés.
     public function show(): void
     {
         $this->requireAuth();
@@ -154,6 +169,7 @@ class ReservationController extends Controller
         $this->view('reservations/show', compact('reservation', 'payments'));
     }
 
+    // Supprime une réservation et journalise l'action
     public function delete(): void
     {
         $this->requireAuth();
