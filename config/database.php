@@ -97,13 +97,23 @@ function paginate(int $total, int $per_page, int $page): array {
 }
 
 // ── Database ─────────────────────────────────────────────────
+// Supports Railway env vars (MYSQLHOST, MYSQLUSER …) with local fallback
 class Database {
-    private string $host    = 'localhost';
-    private int    $port    = 3306;
-    private string $dbname  = 'location_enhanced';
-    private string $user    = 'root';
-    private string $pass    = '';
-    public  ?PDO   $conn    = null;
+    private string $host;
+    private int    $port;
+    private string $dbname;
+    private string $user;
+    private string $pass;
+    public  ?PDO   $conn = null;
+
+    public function __construct()
+    {
+        $this->host   = getenv('MYSQLHOST')     ?: getenv('MYSQL_HOST')     ?: 'localhost';
+        $this->port   = (int)(getenv('MYSQLPORT')     ?: getenv('MYSQL_PORT')     ?: 3306);
+        $this->dbname = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'location_enhanced';
+        $this->user   = getenv('MYSQLUSER')     ?: getenv('MYSQL_USER')     ?: 'root';
+        $this->pass   = getenv('MYSQLPASSWORD') ?: getenv('MYSQL_PASSWORD') ?: '';
+    }
 
     public function getConnection(): PDO {
         if ($this->conn) return $this->conn;
