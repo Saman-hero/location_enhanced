@@ -62,7 +62,7 @@
         <label class="form-label">Photo du véhicule</label>
         <?php if (!empty($data['image_url'])): ?>
         <div style="margin-bottom:8px;">
-          <img src="<?= BASE_URL ?>/uploads/vehicles/<?= h($data['image_url']) ?>"
+          <img src="<?= h(vehicle_img_url($data['image_url'])) ?>"
                alt="Photo actuelle" id="photo-preview"
                style="height:120px;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;">
         </div>

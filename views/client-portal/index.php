@@ -86,7 +86,7 @@
 
       <!-- Image -->
       <?php if (!empty($v['image_url'])): ?>
-      <img src="<?= BASE_URL ?>/uploads/vehicles/<?= h($v['image_url']) ?>"
+      <img src="<?= h(vehicle_img_url($v['image_url'])) ?>"
            alt="<?= h($v['marque'].' '.$v['modele']) ?>"
            class="vehicle-img">
       <?php else: ?>

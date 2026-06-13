@@ -34,16 +34,44 @@ class VehicleController extends Controller
         $this->view('vehicles/index', array_merge($result, compact('search', 'statut', 'categorie', 'marque', 'brands', 'flash')));
     }
 
-    /** Upload a vehicle photo. Returns stored filename or null on failure/no file. */
+    /** Upload a vehicle photo to Cloudinary (fallback: local). Returns URL or filename. */
     private function handlePhotoUpload(string $field, array &$errors): ?string
     {
         if (empty($_FILES[$field]['tmp_name'])) return null;
         $file = $_FILES[$field];
         if ($file['error'] !== UPLOAD_ERR_OK) { $errors[] = 'Erreur lors du téléchargement de la photo.'; return null; }
         if ($file['size'] > 5 * 1024 * 1024)  { $errors[] = 'La photo ne doit pas dépasser 5 Mo.'; return null; }
-        $mime = mime_content_type($file['tmp_name']);
+        $mime    = mime_content_type($file['tmp_name']);
         $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
         if (!isset($allowed[$mime])) { $errors[] = 'Format accepté : JPEG, PNG, WebP.'; return null; }
+
+        // -- Cloudinary upload --
+        $cloudName = getenv('CLOUDINARY_CLOUD_NAME') ?: 'duuvvlak5';
+        $apiKey    = getenv('CLOUDINARY_API_KEY')    ?: '984527874378622';
+        $apiSecret = getenv('CLOUDINARY_API_SECRET') ?: 'zSuE5jPg_paaAjPnyFtwU7ZFjoo';
+        $timestamp = time();
+        $signature = sha1('timestamp=' . $timestamp . $apiSecret);
+
+        $ch = curl_init("https://api.cloudinary.com/v1_1/{$cloudName}/image/upload");
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => [
+                'file'      => new \CURLFile($file['tmp_name'], $mime),
+                'api_key'   => $apiKey,
+                'timestamp' => $timestamp,
+                'signature' => $signature,
+            ],
+        ]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if ($response) {
+            $data = json_decode($response, true);
+            if (!empty($data['secure_url'])) return $data['secure_url'];
+        }
+
+        // -- Fallback: local storage --
         $ext  = $allowed[$mime];
         $name = uniqid('vh_', true) . '.' . $ext;
         $dest = APP_PATH . '/uploads/vehicles/' . $name;

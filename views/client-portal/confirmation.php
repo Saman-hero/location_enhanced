@@ -204,7 +204,7 @@
     <div class="vehicle-banner">
       <div class="vehicle-thumb">
         <?php if (!empty($reservation['image_url'])): ?>
-        <img src="<?= BASE_URL ?>/uploads/vehicles/<?= h($reservation['image_url']) ?>" alt="<?= h($reservation['marque']) ?>">
+        <img src="<?= h(vehicle_img_url($reservation['image_url'])) ?>" alt="<?= h($reservation['marque']) ?>">
         <?php else: ?>
         <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" viewBox="0 0 24 24"><path d="M19 17H5l-2-4V7a1 1 0 011-1h14a1 1 0 011 1v6l-2 4z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>
         <?php endif; ?>

@@ -136,7 +136,7 @@ function brandGradient(string $marque): string {
     <!-- Image / Placeholder -->
     <div class="relative h-[200px] overflow-hidden <?= !empty($v['image_url']) ? '' : $gradient ?>">
       <?php if (!empty($v['image_url'])): ?>
-      <img src="<?= BASE_URL ?>/uploads/vehicles/<?= h($v['image_url']) ?>"
+      <img src="<?= h(vehicle_img_url($v['image_url'])) ?>"
            alt="<?= h($v['marque'].' '.$v['modele']) ?>"
            class="card-img absolute inset-0 w-full h-full object-cover">
       <?php else: ?>

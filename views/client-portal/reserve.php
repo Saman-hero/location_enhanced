@@ -141,7 +141,7 @@ $caution     = $vehicle['caution'] ?? 0;
     <div class="gallery-grid">
       <div class="gallery-main" style="border-radius:0;overflow:hidden;">
         <?php if (!empty($vehicle['image_url'])): ?>
-        <img src="<?= BASE_URL ?>/uploads/vehicles/<?= h($vehicle['image_url']) ?>" alt="<?= h($vehicle['marque']) ?>" style="width:100%;height:100%;object-fit:cover;">
+        <img src="<?= h(vehicle_img_url($vehicle['image_url'])) ?>" alt="<?= h($vehicle['marque']) ?>" style="width:100%;height:100%;object-fit:cover;">
         <?php else: ?>
         <div class="gallery-placeholder" style="height:100%;">
           <svg width="64" height="64" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" viewBox="0 0 24 24"><path d="M19 17H5l-2-4V7a1 1 0 011-1h14a1 1 0 011 1v6l-2 4z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>

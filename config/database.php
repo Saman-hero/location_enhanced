@@ -58,6 +58,11 @@ function require_admin(): void {
 // ── Helpers ──────────────────────────────────────────────────
 function h(mixed $v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
+function vehicle_img_url(string $url): string {
+    if (str_starts_with($url, 'http')) return $url;
+    return BASE_URL . '/uploads/vehicles/' . $url;
+}
+
 function audit(PDO $db, string $action, string $module, string $details = ''): void {
     $stmt = $db->prepare("INSERT INTO audit_log (user_id, username, action, module, details, ip_address) VALUES (?,?,?,?,?,?)");
     $stmt->execute([
