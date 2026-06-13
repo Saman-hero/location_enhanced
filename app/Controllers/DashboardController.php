@@ -45,6 +45,7 @@ class DashboardController extends Controller
         $statusValuesArr = array_column($statusRows, 'cnt');
 
         $stats = [
+            'total_vehicles'      => $totalVehicles,
             'dispo'               => $dispo,
             'loue'                => $loue,
             'maint'               => $maint,
