@@ -1,0 +1,17 @@
+# Uploads (vehicle photos — not versioned)
+uploads/vehicles/*
+!uploads/vehicles/.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
+
+# PHP error logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+
+# Claude memory (local only)
+.claude/
