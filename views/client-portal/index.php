@@ -82,8 +82,7 @@
 
   <div class="vehicles-grid">
     <?php foreach ($vehicles as $v): ?>
-    <a href="<?= BASE_URL ?>/?page=client/reserve&vehicle_id=<?= $v['id'] ?>&date_debut=<?= urlencode($dateDebut) ?>&date_fin=<?= urlencode($dateFin) ?>"
-       class="vehicle-card" style="text-decoration:none;color:inherit;display:block;">
+    <div class="vehicle-card" style="cursor:pointer;" onclick="window.location='<?= BASE_URL ?>/?page=client/reserve&vehicle_id=<?= $v['id'] ?>&date_debut=<?= urlencode($dateDebut) ?>&date_fin=<?= urlencode($dateFin) ?>'">
 
       <!-- Image -->
       <?php if (!empty($v['image_url'])): ?>
@@ -151,7 +150,7 @@
         </div>
 
       </div>
-    </a>
+    </div>
     <?php endforeach; ?>
   </div>
 
