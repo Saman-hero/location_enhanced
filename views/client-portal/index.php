@@ -82,21 +82,38 @@
 
   <div class="vehicles-grid">
     <?php foreach ($vehicles as $v): ?>
-    <div class="vehicle-card" style="cursor:pointer;" onclick="window.location='<?= BASE_URL ?>/?page=client/reserve&vehicle_id=<?= $v['id'] ?>&date_debut=<?= urlencode($dateDebut) ?>&date_fin=<?= urlencode($dateFin) ?>'">
+    <?php
+      $cardImages = $imagesMap[$v['id']] ?? [];
+      if (empty($cardImages) && !empty($v['image_url'])) $cardImages = [vehicle_img_url($v['image_url'])];
+      else $cardImages = array_map('vehicle_img_url', $cardImages);
+      $cardImagesJson = htmlspecialchars(json_encode($cardImages), ENT_QUOTES);
+    ?>
+    <div class="vehicle-card" style="cursor:pointer;"
+         data-images="<?= $cardImagesJson ?>"
+         onclick="window.location='<?= BASE_URL ?>/?page=client/reserve&vehicle_id=<?= $v['id'] ?>&date_debut=<?= urlencode($dateDebut) ?>&date_fin=<?= urlencode($dateFin) ?>'">
 
-      <!-- Image -->
-      <?php if (!empty($v['image_url'])): ?>
-      <img src="<?= h(vehicle_img_url($v['image_url'])) ?>"
-           alt="<?= h($v['marque'].' '.$v['modele']) ?>"
-           class="vehicle-img">
-      <?php else: ?>
-      <div class="vehicle-img-placeholder">
-        <svg width="52" height="52" fill="none" stroke="#cbd5e1" stroke-width="1.2" viewBox="0 0 24 24">
-          <path d="M19 17H5l-2-4V7a1 1 0 011-1h14a1 1 0 011 1v6l-2 4z"/>
-          <circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/>
-        </svg>
+      <!-- Image with slideshow on hover -->
+      <div style="position:relative;overflow:hidden;" class="vehicle-img-wrap">
+        <?php if (!empty($cardImages)): ?>
+        <img src="<?= h($cardImages[0]) ?>"
+             alt="<?= h($v['marque'].' '.$v['modele']) ?>"
+             class="vehicle-img card-slide-img">
+        <?php if (count($cardImages) > 1): ?>
+        <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px;" class="slide-dots">
+          <?php foreach ($cardImages as $ci => $cimg): ?>
+          <span style="width:6px;height:6px;border-radius:50%;background:<?= $ci===0?'#fff':'rgba(255,255,255,0.5)' ?>;transition:background .3s;" class="slide-dot"></span>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+        <?php else: ?>
+        <div class="vehicle-img-placeholder">
+          <svg width="52" height="52" fill="none" stroke="#cbd5e1" stroke-width="1.2" viewBox="0 0 24 24">
+            <path d="M19 17H5l-2-4V7a1 1 0 011-1h14a1 1 0 011 1v6l-2 4z"/>
+            <circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/>
+          </svg>
+        </div>
+        <?php endif; ?>
       </div>
-      <?php endif; ?>
 
       <!-- Content -->
       <div style="padding:20px;">
@@ -159,4 +176,32 @@
 
 <style>
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.card-slide-img { transition: opacity 0.4s ease; }
 </style>
+<script>
+document.querySelectorAll('.vehicle-card[data-images]').forEach(card => {
+  const images = JSON.parse(card.dataset.images || '[]');
+  if (images.length < 2) return;
+
+  const img  = card.querySelector('.card-slide-img');
+  const dots = card.querySelectorAll('.slide-dot');
+  let idx = 0, timer = null;
+
+  function showSlide(i) {
+    idx = (i + images.length) % images.length;
+    img.style.opacity = '0';
+    setTimeout(() => { img.src = images[idx]; img.style.opacity = '1'; }, 200);
+    dots.forEach((d, di) => d.style.background = di === idx ? '#fff' : 'rgba(255,255,255,0.5)');
+  }
+
+  card.addEventListener('mouseenter', () => {
+    idx = 0;
+    timer = setInterval(() => showSlide(idx + 1), 1200);
+  });
+
+  card.addEventListener('mouseleave', () => {
+    clearInterval(timer);
+    showSlide(0);
+  });
+});
+</script>

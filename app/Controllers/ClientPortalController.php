@@ -48,6 +48,9 @@ class ClientPortalController extends Controller
         $stmt->execute($params);
         $vehicles = $stmt->fetchAll();
 
+        $vehicleIds  = array_column($vehicles, 'id');
+        $imagesMap   = $this->vehicleModel->getImagesForVehicles($vehicleIds);
+
         $nbJours = 0;
         if ($dateDebut && $dateFin) {
             $d1 = new \DateTime($dateDebut);
@@ -55,7 +58,7 @@ class ClientPortalController extends Controller
             $nbJours = max(1, $d1->diff($d2)->days);
         }
 
-        $this->view('client-portal/index', compact('vehicles', 'dateDebut', 'dateFin', 'categorie', 'prixMax', 'search', 'nbJours'));
+        $this->view('client-portal/index', compact('vehicles', 'dateDebut', 'dateFin', 'categorie', 'prixMax', 'search', 'nbJours', 'imagesMap'));
     }
 
     public function reserve(): void
@@ -150,7 +153,8 @@ class ClientPortalController extends Controller
             } catch (\Exception $e) {}
         }
 
-        $this->view('client-portal/reserve', compact('vehicle', 'data', 'errors', 'nbJours'));
+        $vehicleImages = $this->vehicleModel->getImages($vehicleId);
+        $this->view('client-portal/reserve', compact('vehicle', 'data', 'errors', 'nbJours', 'vehicleImages'));
     }
 
     public function confirmation(): void

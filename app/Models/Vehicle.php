@@ -66,4 +66,35 @@ class Vehicle extends Model
         return $this->db->query("SELECT DISTINCT marque FROM vehicles ORDER BY marque")
                         ->fetchAll(\PDO::FETCH_COLUMN);
     }
+
+    // -- Multiple images --
+
+    public function getImages(int $vehicleId): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM vehicle_images WHERE vehicle_id = ? ORDER BY ordre, id");
+        $stmt->execute([$vehicleId]);
+        return $stmt->fetchAll();
+    }
+
+    public function addImage(int $vehicleId, string $imageUrl, int $ordre = 0): void
+    {
+        $stmt = $this->db->prepare("INSERT INTO vehicle_images (vehicle_id, image_url, ordre) VALUES (?,?,?)");
+        $stmt->execute([$vehicleId, $imageUrl, $ordre]);
+    }
+
+    public function deleteImage(int $imageId): void
+    {
+        $stmt = $this->db->prepare("DELETE FROM vehicle_images WHERE id = ?");
+        $stmt->execute([$imageId]);
+    }
+
+    public function getImagesForVehicles(array $vehicleIds): array
+    {
+        if (!$vehicleIds) return [];
+        $in   = implode(',', array_map('intval', $vehicleIds));
+        $rows = $this->db->query("SELECT * FROM vehicle_images WHERE vehicle_id IN ($in) ORDER BY vehicle_id, ordre, id")->fetchAll();
+        $map  = [];
+        foreach ($rows as $r) $map[$r['vehicle_id']][] = $r['image_url'];
+        return $map;
+    }
 }

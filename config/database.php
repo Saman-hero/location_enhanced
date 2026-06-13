@@ -129,6 +129,14 @@ class Database {
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $this->conn->exec("CREATE TABLE IF NOT EXISTS `vehicle_images` (
+                `id`         INT AUTO_INCREMENT PRIMARY KEY,
+                `vehicle_id` INT NOT NULL,
+                `image_url`  VARCHAR(500) NOT NULL,
+                `ordre`      INT DEFAULT 0,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         } catch (PDOException $e) {
             die('<div style="font-family:monospace;padding:2rem;color:#dc2626;">DB Error: ' . htmlspecialchars($e->getMessage()) . '</div>');
         }

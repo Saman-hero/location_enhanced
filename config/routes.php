@@ -34,7 +34,8 @@ $router->post('vehicles/add',     VehicleController::class, 'create');
 $router->get ('vehicles/edit',    VehicleController::class, 'edit');
 $router->post('vehicles/edit',    VehicleController::class, 'edit');
 $router->get ('vehicles/show',    VehicleController::class, 'show');
-$router->get ('vehicles/delete',  VehicleController::class, 'delete');
+$router->get ('vehicles/delete',      VehicleController::class, 'delete');
+$router->get ('vehicles/deleteImage', VehicleController::class, 'deleteImage');
 
 // ── Reservations ─────────────────────────────────────────────
 $router->get ('reservations',        ReservationController::class, 'index');

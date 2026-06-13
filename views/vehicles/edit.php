@@ -59,19 +59,29 @@
         <div><label class="form-label">Caution (MAD)</label><input type="number" name="caution" class="form-control" value="<?= h($data['caution']) ?>" step="0.01"></div>
       </div>
       <div style="margin-bottom:16px;">
-        <label class="form-label">Photo du véhicule</label>
-        <?php if (!empty($data['image_url'])): ?>
-        <div style="margin-bottom:8px;">
-          <img src="<?= h(vehicle_img_url($data['image_url'])) ?>"
-               alt="Photo actuelle" id="photo-preview"
-               style="height:120px;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;">
+        <label class="form-label">Photos du véhicule</label>
+
+        <?php if (!empty($vehicleImages)): ?>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+          <?php foreach ($vehicleImages as $img): ?>
+          <div style="position:relative;display:inline-block;">
+            <img src="<?= h(vehicle_img_url($img['image_url'])) ?>" alt=""
+                 style="height:100px;width:140px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;">
+            <a href="<?= BASE_URL ?>/?page=vehicles/deleteImage&image_id=<?= $img['id'] ?>&vehicle_id=<?= $id ?>"
+               onclick="return confirm('Supprimer cette photo ?')"
+               style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.85);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;text-decoration:none;line-height:1;">&times;</a>
+          </div>
+          <?php endforeach; ?>
         </div>
-        <?php else: ?>
-        <img id="photo-preview" src="" alt="" style="display:none;height:120px;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;margin-bottom:8px;">
+        <?php elseif (!empty($data['image_url'])): ?>
+        <div style="margin-bottom:10px;">
+          <img src="<?= h(vehicle_img_url($data['image_url'])) ?>" alt="Photo actuelle"
+               style="height:100px;width:140px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;">
+        </div>
         <?php endif; ?>
-        <input type="file" name="photo" id="photo-input" class="form-control" accept="image/jpeg,image/png,image/webp"
-               onchange="previewPhoto(this)">
-        <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Laisser vide pour conserver la photo actuelle · max 5 Mo</div>
+
+        <input type="file" name="photos[]" class="form-control" accept="image/jpeg,image/png,image/webp" multiple>
+        <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Sélectionnez plusieurs photos à la fois (intérieur, extérieur…) · max 5 Mo chacune</div>
       </div>
       <div style="margin-bottom:24px;"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"><?= h($data['description'] ?? '') ?></textarea></div>
       <div style="display:flex;gap:10px;">

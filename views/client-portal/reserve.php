@@ -138,30 +138,54 @@ $caution     = $vehicle['caution'] ?? 0;
     </div>
 
     <!-- Gallery -->
-    <div class="gallery-grid">
-      <div class="gallery-main" style="border-radius:0;overflow:hidden;">
-        <?php if (!empty($vehicle['image_url'])): ?>
-        <img src="<?= h(vehicle_img_url($vehicle['image_url'])) ?>" alt="<?= h($vehicle['marque']) ?>" style="width:100%;height:100%;object-fit:cover;">
+    <?php
+      $allImages = array_map(fn($img) => vehicle_img_url($img['image_url']), $vehicleImages ?? []);
+      if (empty($allImages) && !empty($vehicle['image_url'])) $allImages = [vehicle_img_url($vehicle['image_url'])];
+    ?>
+    <div style="position:relative;">
+      <!-- Main photo viewer -->
+      <div id="gallery-main" style="height:340px;border-radius:16px;overflow:hidden;background:#0f172a;position:relative;">
+        <?php if (!empty($allImages)): ?>
+        <img id="gallery-main-img" src="<?= h($allImages[0]) ?>" alt="<?= h($vehicle['marque']) ?>"
+             style="width:100%;height:100%;object-fit:cover;transition:opacity .35s ease;">
+        <?php if (count($allImages) > 1): ?>
+        <button onclick="galleryPrev()" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&#8249;</button>
+        <button onclick="galleryNext()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&#8250;</button>
+        <div style="position:absolute;bottom:10px;right:14px;background:rgba(0,0,0,.5);color:#fff;font-size:12px;padding:3px 9px;border-radius:99px;" id="gallery-counter">1 / <?= count($allImages) ?></div>
+        <?php endif; ?>
         <?php else: ?>
-        <div class="gallery-placeholder" style="height:100%;">
-          <svg width="64" height="64" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" viewBox="0 0 24 24"><path d="M19 17H5l-2-4V7a1 1 0 011-1h14a1 1 0 011 1v6l-2 4z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>
+        <div style="height:100%;display:flex;align-items:center;justify-content:center;">
+          <svg width="64" height="64" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" viewBox="0 0 24 24"><path d="M19 17H5l-2-4V7a1 1 0 011-1h14a1 1 0 011 1v6l-2 4z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>
         </div>
         <?php endif; ?>
       </div>
-      <div style="background:linear-gradient(160deg,#1e3a5f,#0f172a);display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;padding:12px;">
-          <div style="font-size:28px;font-weight:800;color:#10b981;"><?= number_format($vehicle['prix_jour'],0,',',' ') ?></div>
-          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">MAD / jour</div>
-        </div>
+
+      <!-- Thumbnails -->
+      <?php if (count($allImages) > 1): ?>
+      <div style="display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:4px;">
+        <?php foreach ($allImages as $ti => $timg): ?>
+        <img src="<?= h($timg) ?>" onclick="galleryGo(<?= $ti ?>)"
+             style="height:64px;width:90px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid <?= $ti===0?'#10b981':'transparent' ?>;flex-shrink:0;transition:border-color .2s;"
+             class="gallery-thumb" id="thumb-<?= $ti ?>">
+        <?php endforeach; ?>
       </div>
-      <div style="background:linear-gradient(160deg,#0f2a1a,#0f172a);display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;padding:12px;">
-          <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Caution</div>
-          <div style="font-size:20px;font-weight:700;color:#fff;"><?= number_format($vehicle['caution']??0,0,',',' ') ?></div>
-          <div style="font-size:11px;color:#64748b;">MAD</div>
-        </div>
-      </div>
+      <?php endif; ?>
     </div>
+
+    <script>
+    const galleryImgs = <?= json_encode($allImages) ?>;
+    let galleryIdx = 0;
+    function galleryGo(i) {
+      galleryIdx = (i + galleryImgs.length) % galleryImgs.length;
+      const img = document.getElementById('gallery-main-img');
+      img.style.opacity = '0';
+      setTimeout(() => { img.src = galleryImgs[galleryIdx]; img.style.opacity = '1'; }, 180);
+      document.getElementById('gallery-counter') && (document.getElementById('gallery-counter').textContent = (galleryIdx+1) + ' / ' + galleryImgs.length);
+      document.querySelectorAll('.gallery-thumb').forEach((t,ti) => t.style.borderColor = ti===galleryIdx?'#10b981':'transparent');
+    }
+    function galleryNext() { galleryGo(galleryIdx + 1); }
+    function galleryPrev() { galleryGo(galleryIdx - 1); }
+    </script>
 
     <!-- Specs -->
     <div class="specs-grid">

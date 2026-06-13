@@ -34,18 +34,40 @@ class VehicleController extends Controller
         $this->view('vehicles/index', array_merge($result, compact('search', 'statut', 'categorie', 'marque', 'brands', 'flash')));
     }
 
-    /** Upload a vehicle photo to Cloudinary (fallback: local). Returns URL or filename. */
-    private function handlePhotoUpload(string $field, array &$errors): ?string
+    /** Upload multiple vehicle photos. Returns array of URLs. */
+    private function handleMultiplePhotoUploads(string $field, array &$errors): array
     {
-        if (empty($_FILES[$field]['tmp_name'])) return null;
-        $file = $_FILES[$field];
-        if ($file['error'] !== UPLOAD_ERR_OK) { $errors[] = 'Erreur lors du téléchargement de la photo.'; return null; }
-        if ($file['size'] > 5 * 1024 * 1024)  { $errors[] = 'La photo ne doit pas dépasser 5 Mo.'; return null; }
+        $urls = [];
+        if (empty($_FILES[$field]['tmp_name'])) return $urls;
+        $files = $_FILES[$field];
+        // Normalize to array format
+        if (!is_array($files['tmp_name'])) {
+            $files = array_map(fn($v) => [$v], $files);
+        }
+        $count = count($files['tmp_name']);
+        for ($i = 0; $i < $count; $i++) {
+            if (empty($files['tmp_name'][$i])) continue;
+            $single = [
+                'tmp_name' => $files['tmp_name'][$i],
+                'error'    => $files['error'][$i],
+                'size'     => $files['size'][$i],
+                'type'     => $files['type'][$i],
+            ];
+            $url = $this->uploadOnePhoto($single, $errors);
+            if ($url) $urls[] = $url;
+        }
+        return $urls;
+    }
+
+    /** Upload one photo file array to Cloudinary (fallback: local). */
+    private function uploadOnePhoto(array $file, array &$errors): ?string
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) { $errors[] = 'Erreur lors du téléchargement d\'une photo.'; return null; }
+        if ($file['size'] > 5 * 1024 * 1024)  { $errors[] = 'Une photo dépasse la limite de 5 Mo.'; return null; }
         $mime    = mime_content_type($file['tmp_name']);
         $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
         if (!isset($allowed[$mime])) { $errors[] = 'Format accepté : JPEG, PNG, WebP.'; return null; }
 
-        // -- Cloudinary upload --
         $cloudName = getenv('CLOUDINARY_CLOUD_NAME') ?: 'duuvvlak5';
         $apiKey    = getenv('CLOUDINARY_API_KEY')    ?: '984527874378622';
         $apiSecret = getenv('CLOUDINARY_API_SECRET') ?: 'zSuE5jPg_paaAjPnyFtwU7ZFjoo';
@@ -67,16 +89,25 @@ class VehicleController extends Controller
         curl_close($ch);
 
         if ($response) {
-            $data = json_decode($response, true);
-            if (!empty($data['secure_url'])) return $data['secure_url'];
+            $res = json_decode($response, true);
+            if (!empty($res['secure_url'])) return $res['secure_url'];
         }
 
-        // -- Fallback: local storage --
         $ext  = $allowed[$mime];
         $name = uniqid('vh_', true) . '.' . $ext;
         $dest = APP_PATH . '/uploads/vehicles/' . $name;
         if (!move_uploaded_file($file['tmp_name'], $dest)) { $errors[] = 'Impossible de sauvegarder la photo.'; return null; }
         return $name;
+    }
+
+    public function deleteImage(): void
+    {
+        $this->requireAuth();
+        $imageId   = (int)$this->query('image_id');
+        $vehicleId = (int)$this->query('vehicle_id');
+        $this->vehicleModel->deleteImage($imageId);
+        $this->flash('success', 'Photo supprimée.');
+        $this->redirect('vehicles/edit', ['id' => $vehicleId]);
     }
 
     public function create(): void
@@ -103,9 +134,10 @@ class VehicleController extends Controller
                 if ($chk->fetch()) $errors[] = 'Ce numéro de véhicule existe déjà.';
             }
 
-            $photoName = $this->handlePhotoUpload('photo', $errors);
+            $photos = $this->handleMultiplePhotoUploads('photos', $errors);
 
             if (!$errors) {
+                $coverUrl = !empty($photos) ? $photos[0] : '';
                 $id = $this->vehicleModel->create([
                     'numero'         => $data['numero'],
                     'immatriculation'=> $data['immatriculation'],
@@ -122,8 +154,11 @@ class VehicleController extends Controller
                     'carburant'      => $data['carburant'],
                     'transmission'   => $data['transmission'],
                     'description'    => $data['description'],
-                    'image_url'      => $photoName ?? '',
+                    'image_url'      => $coverUrl,
                 ]);
+                foreach ($photos as $i => $url) {
+                    $this->vehicleModel->addImage($id, $url, $i);
+                }
                 $this->auditModel->log('Création véhicule', 'vehicles', "Véhicule {$data['numero']} ajouté (ID:$id)");
                 $this->flash('success', "Véhicule {$data['numero']} ajouté avec succès.");
                 $this->redirect('vehicles');
@@ -149,14 +184,19 @@ class VehicleController extends Controller
             if (!trim($data['modele']))          $errors[] = 'Le modèle est obligatoire.';
             if (!is_numeric($data['prix_jour'])) $errors[] = 'Le prix/jour doit être un nombre.';
 
-            $photoName = $this->handlePhotoUpload('photo', $errors);
+            $newPhotos = $this->handleMultiplePhotoUploads('photos', $errors);
 
             if (!$errors) {
-                $imageUrl = $photoName ?? ($vehicle['image_url'] ?? '');
-                // Delete old photo if a new one was uploaded
-                if ($photoName && !empty($vehicle['image_url'])) {
-                    $old = APP_PATH . '/uploads/vehicles/' . $vehicle['image_url'];
-                    if (file_exists($old)) @unlink($old);
+                $existingImages = $this->vehicleModel->getImages($id);
+                $coverUrl = $vehicle['image_url'] ?? '';
+                if (!empty($newPhotos)) {
+                    $nextOrdre = count($existingImages);
+                    foreach ($newPhotos as $i => $url) {
+                        $this->vehicleModel->addImage($id, $url, $nextOrdre + $i);
+                    }
+                    if (empty($existingImages) && empty($coverUrl)) {
+                        $coverUrl = $newPhotos[0];
+                    }
                 }
                 $this->vehicleModel->update($id, [
                     'immatriculation'=> $data['immatriculation'],
@@ -173,15 +213,16 @@ class VehicleController extends Controller
                     'carburant'      => $data['carburant'],
                     'transmission'   => $data['transmission'],
                     'description'    => $data['description'],
-                    'image_url'      => $imageUrl,
+                    'image_url'      => $coverUrl,
                 ]);
                 $this->auditModel->log('Modification véhicule', 'vehicles', "Véhicule {$data['numero']} modifié");
                 $this->flash('success', "Véhicule {$data['numero']} mis à jour.");
-                $this->redirect('vehicles');
+                $this->redirect('vehicles/edit', ['id' => $id]);
             }
         }
 
-        $this->view('vehicles/edit', compact('errors', 'data', 'id'));
+        $vehicleImages = $this->vehicleModel->getImages($id);
+        $this->view('vehicles/edit', compact('errors', 'data', 'id', 'vehicleImages'));
     }
 
     public function show(): void

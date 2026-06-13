@@ -59,9 +59,9 @@
         <div><label class="form-label">Caution (MAD)</label><input type="number" name="caution" class="form-control" value="<?= h($data['caution']) ?>" step="0.01" min="0"></div>
       </div>
       <div style="margin-bottom:16px;">
-        <label class="form-label">Photo du véhicule</label>
-        <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp">
-        <div style="font-size:12px;color:#94a3b8;margin-top:4px;">JPEG, PNG ou WebP · max 5 Mo</div>
+        <label class="form-label">Photos du véhicule</label>
+        <input type="file" name="photos[]" class="form-control" accept="image/jpeg,image/png,image/webp" multiple>
+        <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Sélectionnez plusieurs photos (intérieur, extérieur…) · max 5 Mo chacune</div>
       </div>
       <div style="margin-bottom:24px;"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3" placeholder="Informations supplémentaires..."><?= h($data['description']) ?></textarea></div>
       <div style="display:flex;gap:10px;">
