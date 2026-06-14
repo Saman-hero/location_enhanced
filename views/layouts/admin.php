@@ -12,6 +12,7 @@ $dir   = $isRtl ? 'rtl' : 'ltr';
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { colors: { emerald: { 500:'#10b981',400:'#34d399',600:'#059669' }, azure: { 500:'#3b82f6',600:'#2563eb',100:'#dbeafe' } } } } }</script>
   <style>
