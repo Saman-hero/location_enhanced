@@ -12,6 +12,11 @@ class DashboardController extends Controller
         $this->requireAuth();
 
         // Compteur global de visites de l'application (table app_settings)
+        $this->db->exec("CREATE TABLE IF NOT EXISTS `app_settings` (
+            `key`   VARCHAR(50) PRIMARY KEY,
+            `value` VARCHAR(255) NOT NULL DEFAULT '0'
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $this->db->exec("INSERT IGNORE INTO `app_settings` (`key`, `value`) VALUES ('visit_count', '0')");
         $this->db->exec("UPDATE app_settings SET value = value + 1 WHERE `key` = 'visit_count'");
         $stmt = $this->db->prepare("SELECT value FROM app_settings WHERE `key` = 'visit_count'");
         $stmt->execute();

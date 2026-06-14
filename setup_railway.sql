@@ -140,6 +140,13 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `app_settings` (
+  `key`   VARCHAR(50) PRIMARY KEY,
+  `value` VARCHAR(255) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `app_settings` (`key`, `value`) VALUES ('visit_count', '0');
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT IGNORE INTO `users` (`nom`,`prenom`,`username`,`password`,`role`) VALUES
